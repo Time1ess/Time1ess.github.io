@@ -7,6 +7,11 @@ layout: default
   <span class="post-date">{{ page.date | date: "%Y年%m月%d日" }}</span>
   {{ content }}
 </div>
+{% if site.comments %}
+<div class="comments">
+    {% include comments.html %}
+</div>
+{% endif %}
 
 <div class="related">
   <h2>相关阅读</h2>

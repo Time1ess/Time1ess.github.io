@@ -17,3 +17,6 @@ repo-link:           https://github.com/Time1ess/Time1ess.github.io
 
 # Gems module
 gems:                [jekyll-paginate]
+
+# Custom settings
+comments:            true
