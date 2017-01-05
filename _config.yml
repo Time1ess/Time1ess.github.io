@@ -1,0 +1,21 @@
+# Permalinks
+#
+# Use of `relative_permalinks` ensures post links from the index work properly.
+permalink:           pretty
+# relative_permalinks: true
+
+# Setup
+title:               David's Blog
+tagline:             'David'
+description:         'A CS student'
+url:                 http://youchen.me
+baseurl:             ''
+
+# About/contact
+author:
+  name:              David
+  url:               https://youchen.me
+  email:             youchen.du@gmail.com
+
+# Custom vars
+version:             1.0.0
