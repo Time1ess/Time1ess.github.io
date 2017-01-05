@@ -9,7 +9,13 @@ $(document).ready(function()
     fku = sku;
     if(e.keyCode == 17 && interval < 500) 
     {
-      if($('#search-panel').css('display')=='none')
+      search_panel_switch();
+      fku = 0;
+    }
+  });
+  function search_panel_switch()
+  {
+    if($('#search-panel').css('display')=='none')
       {
         $('#search-panel').css('display', 'block');
       }
@@ -17,9 +23,11 @@ $(document).ready(function()
       {
         $('#search-panel').css('display', 'none');
       }
-      fku = 0;
-    }
-  });
+  }
+  $('#search-open').click(function()
+  {
+      search_panel_switch();
+  })
   $('#search-close').click(function()
   {
     $("#search-panel").css("display", "none");
