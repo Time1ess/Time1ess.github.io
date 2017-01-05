@@ -1,21 +1,19 @@
-# Permalinks
-#
-# Use of `relative_permalinks` ensures post links from the index work properly.
 permalink:           pretty
-# relative_permalinks: true
 
 # Setup
 title:               David's Blog
-tagline:             'David'
-description:         'A CS student'
+tagline:             'A graduate student major in CS'
+description:         ''
 url:                 http://youchen.me
-baseurl:             ''
+baseurl:             ""
+paginate:            5
 
 # About/contact
 author:
   name:              David
   url:               https://youchen.me
-  email:             youchen.du@gmail.com
+  email:             youchen.du(at)gmail.com
+repo-link:           https://github.com/Time1ess/Time1ess.github.io
 
-# Custom vars
-version:             1.0.0
+# Gems module
+gems:                [jekyll-paginate]
