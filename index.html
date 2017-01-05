@@ -10,15 +10,13 @@ title: 主页
         {{ post.title }}
       </a>
     </h1>
-
-    <span class="post-date">{{ post.date | date: "%Y年%m月%d日" }}</span>
-
+    <span class="post-date">{{ post.date | date: "%Y年%m月%d日 %H时%M分" }}</span>
     {{ post.content }}
   </div>
   {% endfor %}
 </div>
 
-<div class="pagination">
+<div class="pagination-lanyon">
   {% if paginator.next_page %}
     <a class="pagination-item older" href="{{ site.baseurl }}/page{{paginator.next_page}}">往后</a>
   {% else %}

@@ -1,12 +1,8 @@
 <!DOCTYPE html>
 <html lang="en-us">
-
   {% include head.html %}
-
   <body>
-
     {% include sidebar.html %}
-
     <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
          content to avoid any CSS collisions with our real content. -->
     <div class="wrap">
@@ -18,14 +14,12 @@
           </h3>
         </div>
       </div>
-
       <div class="container content">
         {{ content }}
       </div>
     </div>
-
     <label for="sidebar-checkbox" class="sidebar-toggle"></label>
-
+    {% include foot.html %}
     <script>
       (function(document) {
         var toggle = document.querySelector('.sidebar-toggle');
@@ -43,5 +37,6 @@
         }, false);
       })(document);
     </script>
+        {% include search.html %}
   </body>
 </html>
