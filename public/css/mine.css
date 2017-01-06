@@ -6,31 +6,44 @@
 	right: 0px; 
 	opacity: 0.95; 
 	background-color: rgb(17, 17, 17); 
-	z-index: 9999; 
+	z-index: 100; 
 	display: none;
 }
 
-.search-content input {
-   width: 70%;
-   margin: 0 15%;
+.search-input {
    position: absolute;
    top: 8em;
+   font-size: 20px;
+   width: 100%;
    left: auto;
    right: auto;
-   font-size: 20px;
+   display: block;
+}
+
+.search-input .icon {
+	position: absolute;
+	font-size: 2em;
+	margin: 0 15.5%;
+	top: 5px;
+	z-index: 1;
+}
+
+.search-input input {
+   position: absolute;
+   width: 70%;
+   margin: 0 15%;
    height: 50px;
    background-color: #eee;
    color: black;
    opacity: 1.0;
-   display: block;
+   padding-left: 4em;
 }
 
-.search-content ul {
+.search-input ul {
 	display: none;
-	top: 210px; 
 	left: auto;
 	right: auto;
-	position: relative;
+	position: absolute;
 	width: 70%;
 	margin: 0 15%;
 	font-size: 20px;
@@ -43,8 +56,15 @@
 .search-close {
 	position: fixed;
 	width: 50px;
-	top: 2em;
-	right: 2em;
+	top: 1em;
+	right: 1em;
+}
+
+.search-button {
+	width:50px;
+	position:fixed; 
+	right: 2em; 
+	bottom: 2em;
 }
 
 @media screen and (min-width: 768px)
@@ -53,15 +73,20 @@
 
 @media screen and (max-width: 767px)
 {
-.search-content input {
+.search-input input {
    width: 95%;
    margin: 0 2%;
-   top: 180px;
    font-size: 14px;
 }
-.search-content ul {
+.search-input ul {
 	width: 95%;
 	margin: 0 2%;
 	font-size: 14px;
+}
+.search-input .icon {
+	position: absolute;
+	margin: 0 2.5%;
+	top: 5px;
+	font-size: 2em;
 }
 }
