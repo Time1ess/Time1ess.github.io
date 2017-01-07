@@ -533,7 +533,7 @@ main.apollo-container{
 @media screen and (min-width: 700px){
 .apollo-wrap{
     width:700px;
-    margin:0 300px;
+    margin:0 auto;
 }
 header{
     padding:20px 100px
