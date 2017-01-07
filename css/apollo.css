@@ -544,15 +544,15 @@ header{
 .apollo-wrap{
     width:100%
 }
-header{
+header.apollo{
     padding:20px 0
 }
-header a.logo-link,header ul.apollo-nav.apollo-nav-list{
+header.apollo a.logo-link,header ul.apollo-nav.apollo-nav-list{
     float:none;
     display:block;
     text-align:center
 }
-header li.apollo-nav-list-item{
+header.apollo li.apollo-nav-list-item{
     padding:10px 10px
 }
 main.apollo-container,.home.post-list,.archive{

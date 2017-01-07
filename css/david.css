@@ -52,7 +52,7 @@ a {
 	left: auto;
 	right: auto;
 	position: absolute;
-	width: 70%;
+	width: 72%;
 	margin: 0 15%;
 	font-size: 20px;
 	float: none;
@@ -82,12 +82,15 @@ a {
 {
 .search-input input {
    margin: 0 2%;
+   margin-left: 10%;
    font-size: 14px;
    border-radius: 10px;
+   height: 30px;
 }
 .search-input ul {
-	width: 95%;
+	width: 78%;
 	margin: 0 2%;
+	margin-left: 10%;
 	font-size: 14px;
 }
 .search-input .icon {

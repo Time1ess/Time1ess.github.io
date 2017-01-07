@@ -34,23 +34,18 @@ $(document).ready(function()
     fku = 0;
   })
   $.getJSON("/content.json").done(function (data) {
-    alert(data);
-    if(data.code == 0)
-    {
-      for(var index in data.data){
-        var item = data.data[index];
+      for(var index in data){
+        var item = data[index];
         var key_word = item['title']+' - ';
         var tags = item['tags'];
         var date = item['date'];
         for(var idx in tags)
-          key_word += ' '+tags[idx];
-        key_word += ' '+date;
+          key_word += ' '+tags[idx]['name'];
+        key_word += ' '+date.substr(0, 10);
         key_words.push(key_word);
-        var url = item['url'];
-        urls.push(url);
+        var path = '/'+item['path'];
+        urls.push(path);
       }
-      alert(key_words);
-      alert(urls);
       $('#search-keywords').typeahead({
         source: key_words,
 
@@ -58,6 +53,5 @@ $(document).ready(function()
           window.location.href = (urls[key_words.indexOf(item)]);
         }
       })
-    }
   });
 });
