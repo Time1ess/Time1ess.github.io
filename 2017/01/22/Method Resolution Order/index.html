@@ -1,28 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
-  <title>David&#39;s Blog</title>
-  <subtitle>A graduate student in Computer Science</subtitle>
-  <link href="/atom.xml" rel="self"/>
-  
-  <link href="http://youchen.me/"/>
-  <updated>2017-01-22T14:11:59.000Z</updated>
-  <id>http://youchen.me/</id>
-  
-  <author>
-    <name>David</name>
-    
-  </author>
-  
-  <generator uri="http://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title>Python中的MRO</title>
-    <link href="http://youchen.me/2017/01/22/Method%20Resolution%20Order/"/>
-    <id>http://youchen.me/2017/01/22/Method Resolution Order/</id>
-    <published>2017-01-22T07:23:00.000Z</published>
-    <updated>2017-01-22T14:11:59.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>今天我想对Python中的方法解析顺序使用的C3算法进行一个梳理，文章内容主要基于对<a href="https://www.python.org/download/releases/2.3/mro/" target="_blank" rel="external">The Python 2.3 Method Resolution Order</a>一文的节选翻译。</p>
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Python中的MRO · David's Blog</title><meta name="description" content="Python中的MRO - David"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/imgs/favicon.ico"><link rel="stylesheet" href="/css/bootstrap.css"><link rel="stylesheet" href="/css/bootstrap-theme.css"><link rel="stylesheet" href="/css/apollo.css"><link rel="stylesheet" href="/css/david.css"><link rel="search" type="application/opensearchdescription+xml" href="http://youchen.me/atom.xml" title="David's Blog"></head><body><div id="search"><div id="search-panel" class="search-panel"><div class="search-input"><span class="glyphicon glyphicon-search icon"></span><input id="search-keywords" type="text" placeholder="搜索范围: 文章标题 日期 标签" class="form-control"><ul role="list" class="typeahead dropdown-menu"></ul></div><div class="search-close"><a id="search-close" href="#"><img src="/imgs/close-white.png"></a></div></div><div class="search-button"><a id="search-open" title="双击Ctrl快速打开搜索框"><img src="/imgs/search-black.png"></a></div></div><div class="apollo-wrap"><header class="apollo"><a href="/" class="logo-link"><img src="/imgs/favicon.png" alt="logo"></a><ul class="apollo-nav apollo-nav-list"><li class="apollo-nav-list-item"><a href="/" target="_self" class="apollo-nav-list-link">博客</a></li><li class="apollo-nav-list-item"><a href="/archives" target="_self" class="apollo-nav-list-link">归档</a></li><li class="apollo-nav-list-item"><a href="/categories" target="_self" class="apollo-nav-list-link">分类</a></li><li class="apollo-nav-list-item"><a href="https://github.com/Time1ess" target="_blank" class="apollo-nav-list-link">GITHUB</a></li><li class="apollo-nav-list-item"><a href="/atom.xml" target="_self" class="apollo-nav-list-link">RSS</a></li><li class="apollo-nav-list-item"><a href="/about" target="_self" class="apollo-nav-list-link">关于</a></li></ul></header><main class="apollo-container"><div class="post"><article class="post-block"><h1 class="post-title">Python中的MRO</h1><div class="post-info">时间: 2017年1月22日 15:23<a href="https://www.python.org/download/releases/2.3/mro" target="_blank" title="https://www.python.org/download/releases/2.3/mro" class="post-from">翻译 · 原文地址</a> 标签: <a class="tags" href="/tags/Python/">#Python</a>,<a class="tags" href="/tags/MRO/">#MRO</a>,<a class="tags" href="/tags/C3/">#C3</a></div><div class="post-content"><p>今天我想对Python中的方法解析顺序使用的C3算法进行一个梳理，文章内容主要基于对<a href="https://www.python.org/download/releases/2.3/mro/" target="_blank" rel="external">The Python 2.3 Method Resolution Order</a>一文的节选翻译。</p>
 <p>首先，需要明白的是C3算法工作于Python 2.2引入的新式类(<em>new style classes</em>)，经典类(<em>classic classes</em>)中方法的解析仍然保持他们原有的顺序，即<code>深度优先，从左至右</code>，在此不进行深一步的讨论。</p>
 <a id="more"></a>
 <p>先来看一个例子:</p>
@@ -120,113 +96,14 @@
 <p>$$L[Z, P22] = Z\;K1\;K3\;A\;K2\;D\;B\;C\;E\;O$$ </p>
 </blockquote>
 <p>显然这个线性化结果是错的，因为类先于D出现了，而K3的线性化结果中D先于A出现。换句话说，在K3中，从类A继承的方法被从类D继承的方法覆盖了，但是在Z中，作为一个K3的子类，却使用了从类A继承的方法去覆盖从类D继承的方法！这违反了单调性。此外，Python 2.2中类Z的线性化结果与局部优先顺序也不一致，类Z的局部优先列表为<code>[K1, K2, K3]</code>(K2在K3之前)，而在线性化结果中K3在K2之前，这些问题解释了为什么2.2中的规则被弃用转投C3规则。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;今天我想对Python中的方法解析顺序使用的C3算法进行一个梳理，文章内容主要基于对&lt;a href=&quot;https://www.python.org/download/releases/2.3/mro/&quot;&gt;The Python 2.3 Method Resolution Order&lt;/a&gt;一文的节选翻译。&lt;/p&gt;
-&lt;p&gt;首先，需要明白的是C3算法工作于Python 2.2引入的新式类(&lt;em&gt;new style classes&lt;/em&gt;)，经典类(&lt;em&gt;classic classes&lt;/em&gt;)中方法的解析仍然保持他们原有的顺序，即&lt;code&gt;深度优先，从左至右&lt;/code&gt;，在此不进行深一步的讨论。&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="Python" scheme="http://youchen.me/categories/Python/"/>
-    
-    
-      <category term="Python" scheme="http://youchen.me/tags/Python/"/>
-    
-      <category term="MRO" scheme="http://youchen.me/tags/MRO/"/>
-    
-      <category term="C3" scheme="http://youchen.me/tags/C3/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>multiprocessing中pool实现</title>
-    <link href="http://youchen.me/2017/01/17/multiprocessing-pool/"/>
-    <id>http://youchen.me/2017/01/17/multiprocessing-pool/</id>
-    <published>2017-01-17T00:52:00.000Z</published>
-    <updated>2017-01-17T02:10:58.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>终于有时间来整理整理之前自己的一些心得，今天想分享的是之前梳理的<code>Python</code>中<code>multiprocessing</code>模块的线程池与进程池实现。</p>
-<a id="more"></a>
-<p>multiprocessing.pool类包含taskqueue、inqueue、outqueue三个队列，其中：</p>
-<ul>
-<li>taskqueue采用<code>Queue.Queue</code>实现，通过apply、apply_async、map、map_async等函数向pool类提交任务。</li>
-<li>inqueue、outqueue采用<code>SimpleQueue</code>实现，本质上是带锁的pipe</li>
-<li>inqueue负责存放待完成任务，outqueue负责存放已完成任务</li>
-</ul>
-<p>multiprocessing.pool类包含worker_handler、task_handler、result_handler三个handler，均在threading.Thread上工作，均为<code>Daemon Thread</code>，其中：</p>
-<ul>
-<li><p>worker_handler负责回收已经完成任务的worker，同时根据回收数量使用process函数重新生成足够的worker，在生命周期中维护整个pool中worker的数量:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">_maintain_pool</span><span class="params">(self)</span>:</span></div><div class="line">    <span class="string">"""Clean up any exited workers and start replacements for them.</span></div><div class="line">    """</div><div class="line">    <span class="keyword">if</span> self._join_exited_workers():</div><div class="line">        self._repopulate_pool()</div><div class="line"></div><div class="line"><span class="meta">@staticmethod</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">_handle_workers</span><span class="params">(pool)</span>:</span></div><div class="line">    thread = threading.current_thread()</div><div class="line"></div><div class="line">    <span class="comment"># Keep maintaining workers until the cache gets drained, unless the pool</span></div><div class="line">    <span class="comment"># is terminated.</span></div><div class="line">    <span class="keyword">while</span> thread._state == RUN <span class="keyword">or</span> (pool._cache <span class="keyword">and</span> thread._state != TERMINATE):</div><div class="line">        pool._maintain_pool()</div><div class="line">        time.sleep(<span class="number">0.1</span>)</div><div class="line">    <span class="comment"># send sentinel to stop workers</span></div><div class="line">    pool._taskqueue.put(<span class="keyword">None</span>)</div><div class="line">    util.debug(<span class="string">'worker handler exiting'</span>)</div></pre></td></tr></table></figure>
-</li>
-<li><p>task_handler负责从taskqueue中按先后顺序阻塞获取待完成任务，更新pool的任务cache，并提交至inqueue中等待worker处理</p>
-</li>
-<li>result_handler负责从outqueue中按先后顺序阻塞获取已完成任务，更新pool的任务cache，如果存在回调函数则进行回调操作</li>
-</ul>
-<p>multiprocessing.pool类包含1个(未实现情况下)或多个(未提供数量，cpu_count()个)或指定数量的worker，其中：</p>
-<ul>
-<li>worker的维护由worker_handerler负责，在一个worker任务完成后由worker_handler负责回收并重新生成新的worker</li>
-<li>worker包含对inqueue.get和outqueue.put的引用</li>
-<li>worker从inqueue从获取待完成任务，并负责执行该任务，并将执行结果提交至outqueue中等待处理:<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">worker</span><span class="params">(inqueue, outqueue, initializer=None, initargs=<span class="params">()</span>, maxtasks=None,</span></span></div><div class="line">           wrap_exception=False):</div><div class="line">    <span class="keyword">assert</span> maxtasks <span class="keyword">is</span> <span class="keyword">None</span> <span class="keyword">or</span> (type(maxtasks) == int <span class="keyword">and</span> maxtasks &gt; <span class="number">0</span>)</div><div class="line">    put = outqueue.put</div><div class="line">    get = inqueue.get</div><div class="line">    <span class="keyword">if</span> hasattr(inqueue, <span class="string">'_writer'</span>):</div><div class="line">        inqueue._writer.close()</div><div class="line">        outqueue._reader.close()</div><div class="line"></div><div class="line">    <span class="keyword">if</span> initializer <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</div><div class="line">        initializer(*initargs)</div><div class="line"></div><div class="line">    completed = <span class="number">0</span></div><div class="line">    <span class="keyword">while</span> maxtasks <span class="keyword">is</span> <span class="keyword">None</span> <span class="keyword">or</span> (maxtasks <span class="keyword">and</span> completed &lt; maxtasks):</div><div class="line">        <span class="keyword">try</span>:</div><div class="line">            task = get()</div><div class="line">        <span class="keyword">except</span> (EOFError, OSError):</div><div class="line">            util.debug(<span class="string">'worker got EOFError or OSError -- exiting'</span>)</div><div class="line">            <span class="keyword">break</span></div><div class="line"></div><div class="line">        <span class="keyword">if</span> task <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">            util.debug(<span class="string">'worker got sentinel -- exiting'</span>)</div><div class="line">            <span class="keyword">break</span></div><div class="line"></div><div class="line">        job, i, func, args, kwds = task</div><div class="line">        <span class="keyword">try</span>:</div><div class="line">            result = (<span class="keyword">True</span>, func(*args, **kwds))</div><div class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</div><div class="line">            <span class="keyword">if</span> wrap_exception:</div><div class="line">                e = ExceptionWithTraceback(e, e.__traceback__)</div><div class="line">            result = (<span class="keyword">False</span>, e)</div><div class="line">        <span class="keyword">try</span>:</div><div class="line">            put((job, i, result))</div><div class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</div><div class="line">            wrapped = MaybeEncodingError(e, result[<span class="number">1</span>])</div><div class="line">            util.debug(<span class="string">"Possible encoding error while sending result: %s"</span> % (</div><div class="line">                wrapped))</div><div class="line">            put((job, i, (<span class="keyword">False</span>, wrapped)))</div><div class="line">        completed += <span class="number">1</span></div><div class="line">    util.debug(<span class="string">'worker exiting after %d tasks'</span> % completed)</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>PS：</p>
-<blockquote>
-<p>multiprocessing.ThreadPool是pool的thread-level级实现，以multiprocessing.dummy中的DummyProcess替换了pool的默认process，DummyProcess继承至threading.Thread，因此ThreadPool的实现是thread-level级的。</p>
-</blockquote>
-<p>实现用图来表示如下:</p>
-<p><img src="/2017/01/17/multiprocessing-pool/python_multiprocessing_pool.png" alt="multiprocessing_pool"></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;终于有时间来整理整理之前自己的一些心得，今天想分享的是之前梳理的&lt;code&gt;Python&lt;/code&gt;中&lt;code&gt;multiprocessing&lt;/code&gt;模块的线程池与进程池实现。&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="Python" scheme="http://youchen.me/categories/Python/"/>
-    
-    
-      <category term="Python" scheme="http://youchen.me/tags/Python/"/>
-    
-      <category term="多进程" scheme="http://youchen.me/tags/%E5%A4%9A%E8%BF%9B%E7%A8%8B/"/>
-    
-      <category term="进程池" scheme="http://youchen.me/tags/%E8%BF%9B%E7%A8%8B%E6%B1%A0/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>欢迎</title>
-    <link href="http://youchen.me/2017/01/05/welcome/"/>
-    <id>http://youchen.me/2017/01/05/welcome/</id>
-    <published>2017-01-05T03:58:00.000Z</published>
-    <updated>2017-01-17T02:16:43.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>欢迎来到我的博客，这个博客使用了<a href="https://hexo.io" target="_blank" rel="external">Hexo</a>构建，托管在<a href="https://pages.github.com" target="_blank" rel="external">Github Pages</a>,主题使用了<a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank" rel="external">Apollo</a>。</p>
-<a id="more"></a>
-<p>因为整个博客是托管在Github上的静态页面，没有数据库的支持，因此使用了<a href="http://duoshuo.com" target="_blank" rel="external">多说</a>来为整个博客提供评论功能，同时我也通过JS给博客增加了搜索功能，通过点击右下角的搜索图标或者双击<code>Ctrl</code>键可以启动搜索，这样可以方便快速查找相关内容。</p>
-<p>现在博客的功能还有限，在以后我会慢慢增加新的功能，同时也会不定期更新一些我学习过程中的心得，欢迎大家阅读！</p>
-<p>谢谢！</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;欢迎来到我的博客，这个博客使用了&lt;a href=&quot;https://hexo.io&quot;&gt;Hexo&lt;/a&gt;构建，托管在&lt;a href=&quot;https://pages.github.com&quot;&gt;Github Pages&lt;/a&gt;,主题使用了&lt;a href=&quot;https://github.com/pinggod/hexo-theme-apollo&quot;&gt;Apollo&lt;/a&gt;。&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="其他" scheme="http://youchen.me/categories/%E5%85%B6%E4%BB%96/"/>
-    
-    
-      <category term="欢迎" scheme="http://youchen.me/tags/%E6%AC%A2%E8%BF%8E/"/>
-    
-      <category term="第一篇" scheme="http://youchen.me/tags/%E7%AC%AC%E4%B8%80%E7%AF%87/"/>
-    
-      <category term="博客" scheme="http://youchen.me/tags/%E5%8D%9A%E5%AE%A2/"/>
-    
-      <category term="新功能" scheme="http://youchen.me/tags/%E6%96%B0%E5%8A%9F%E8%83%BD/"/>
-    
-  </entry>
-  
-</feed>
+</div></article></div></main><footer class="apollo"><div class="paginator"><a href="/2017/01/17/multiprocessing-pool/" class="next">下一篇</a></div><div data-thread-key="2017/01/22/Method Resolution Order/" data-title="Python中的MRO" data-url="http://youchen.me/2017/01/22/Method Resolution Order/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"youchen"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>© 2016 - 2017 <a href="http://youchen.me">David</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script type="text/x-mathjax-config">MathJax.Hub.Config({ tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script><script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/js/jquery-3.1.1.min.js"></script><script src="/js/bootstrap.min.js"></script><script src="/js/typeahead.js"></script><script src="/js/search.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-89945048-1",'auto');ga('send','pageview');</script></body></html>
