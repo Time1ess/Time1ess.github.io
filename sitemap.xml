@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://youchen.me/2017/01/24/Python%20property%20and%20descriptor/</loc>
+    
+    <lastmod>2017-01-24T09:03:13.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://youchen.me/2017/01/22/Method%20Resolution%20Order/</loc>
     
     <lastmod>2017-01-23T04:31:13.000Z</lastmod>
