@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://youchen.me/"/>
-  <updated>2017-02-04T09:44:18.000Z</updated>
+  <updated>2017-02-04T09:45:01.000Z</updated>
   <id>http://youchen.me/</id>
   
   <author>
@@ -20,9 +20,9 @@
     <link href="http://youchen.me/2017/02/04/Python%20property%20access/"/>
     <id>http://youchen.me/2017/02/04/Python property access/</id>
     <published>2017-02-04T08:26:07.000Z</published>
-    <updated>2017-02-04T09:44:18.000Z</updated>
+    <updated>2017-02-04T09:45:01.000Z</updated>
     
-    <content type="html"><![CDATA[<p>在上一篇中讲到了描述器方法<code>__get__</code>、<code>__set__</code>和<code>__delete__</code>，同时也提到，一个对象具有任意一个方法的就会成为描述器，从而在被当作对象属性的时候会重写默认的查找行为。在本片篇中，通过对<a href="https://docs.python.org/2/howto/descriptor.html" target="_blank" rel="external">Descriptor HowTo Guide</a>的节选翻译以及笔者的自身的一些实践，对描述器做一个更详细的说明。</p>
+    <content type="html"><![CDATA[<p>在上一篇中讲到了描述器方法<code>__get__</code>、<code>__set__</code>和<code>__delete__</code>，同时也提到，一个对象具有任意一个方法的就会成为描述器，从而在被当作对象属性的时候会重写默认的查找行为。在本篇中，通过对<a href="https://docs.python.org/2/howto/descriptor.html" target="_blank" rel="external">Descriptor HowTo Guide</a>的节选翻译以及笔者的自身的一些实践，对描述器做一个更详细的说明。</p>
 <p>如果一个对象同时定义了<code>__get__</code>和<code>__set__</code>方法，则称它为资料描述器(<em>data descriptor</em>)，而仅定义了<code>__get__</code>方法的描述器称为非资料描述器(<em>non-data descriptor</em>，常用于方法，其他用途也是可以的)。</p>
 <p>资料描述器和非资料描述器的区别在于：<strong>相对于实例的字典的优先级</strong>。如果实例字典中有和描述器重名的属性，如果描述器是资料描述器，优先使用资料描述器，如果是非资料描述器，优先使用字典中的属性。这就是为何实例a的方法和属性重名时，比如都叫做<code>foo</code>，Python会在访问<code>a.foo</code>时优先访问实例字典中的属性，因为实例的方法是个非资料描述器。<br><a id="more"></a><br>要想制作一个只读的资料描述器需要同时定义<code>__set__</code>和<code>__get__</code>方法，由于是只读，所以只需要在<code>__set__</code>方法中抛出一个<code>AttributeError</code>异常即可。</p>
 <p>在一般情况下，描述器在属性访问时被自动调用。举例来说，<code>obj.d</code>会在<code>obj</code>的字典里面查找<code>d</code>，如果<code>d</code>定义了<code>__get__</code>方法，那么<code>d.__get__(obj)</code>会依据下面的优先规则被调用。</p>
@@ -45,7 +45,7 @@
     
     <summary type="html">
     
-      &lt;p&gt;在上一篇中讲到了描述器方法&lt;code&gt;__get__&lt;/code&gt;、&lt;code&gt;__set__&lt;/code&gt;和&lt;code&gt;__delete__&lt;/code&gt;，同时也提到，一个对象具有任意一个方法的就会成为描述器，从而在被当作对象属性的时候会重写默认的查找行为。在本片篇中，通过对&lt;a href=&quot;https://docs.python.org/2/howto/descriptor.html&quot;&gt;Descriptor HowTo Guide&lt;/a&gt;的节选翻译以及笔者的自身的一些实践，对描述器做一个更详细的说明。&lt;/p&gt;
+      &lt;p&gt;在上一篇中讲到了描述器方法&lt;code&gt;__get__&lt;/code&gt;、&lt;code&gt;__set__&lt;/code&gt;和&lt;code&gt;__delete__&lt;/code&gt;，同时也提到，一个对象具有任意一个方法的就会成为描述器，从而在被当作对象属性的时候会重写默认的查找行为。在本篇中，通过对&lt;a href=&quot;https://docs.python.org/2/howto/descriptor.html&quot;&gt;Descriptor HowTo Guide&lt;/a&gt;的节选翻译以及笔者的自身的一些实践，对描述器做一个更详细的说明。&lt;/p&gt;
 &lt;p&gt;如果一个对象同时定义了&lt;code&gt;__get__&lt;/code&gt;和&lt;code&gt;__set__&lt;/code&gt;方法，则称它为资料描述器(&lt;em&gt;data descriptor&lt;/em&gt;)，而仅定义了&lt;code&gt;__get__&lt;/code&gt;方法的描述器称为非资料描述器(&lt;em&gt;non-data descriptor&lt;/em&gt;，常用于方法，其他用途也是可以的)。&lt;/p&gt;
 &lt;p&gt;资料描述器和非资料描述器的区别在于：&lt;strong&gt;相对于实例的字典的优先级&lt;/strong&gt;。如果实例字典中有和描述器重名的属性，如果描述器是资料描述器，优先使用资料描述器，如果是非资料描述器，优先使用字典中的属性。这就是为何实例a的方法和属性重名时，比如都叫做&lt;code&gt;foo&lt;/code&gt;，Python会在访问&lt;code&gt;a.foo&lt;/code&gt;时优先访问实例字典中的属性，因为实例的方法是个非资料描述器。&lt;br&gt;&lt;/p&gt;
     
