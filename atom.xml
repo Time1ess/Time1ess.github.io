@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://youchen.me/"/>
-  <updated>2017-01-24T09:03:13.000Z</updated>
+  <updated>2017-02-04T09:19:05.000Z</updated>
   <id>http://youchen.me/</id>
   
   <author>
@@ -14,6 +14,53 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Python属性访问</title>
+    <link href="http://youchen.me/2017/02/04/Python%20property%20access/"/>
+    <id>http://youchen.me/2017/02/04/Python property access/</id>
+    <published>2017-02-04T08:26:07.000Z</published>
+    <updated>2017-02-04T09:19:05.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>在上一篇中讲到了描述器方法<code>__get__</code>、<code>__set__</code>和<code>__delete__</code>，同时也提到，一个对象具有任意一个方法的就会成为描述器，从而在被当作对象属性的时候会重写默认的查找行为。在本片中，通过对<a href="https://docs.python.org/2/howto/descriptor.html" target="_blank" rel="external">Descriptor HowTo Guide</a>的节选翻译以及笔者的自身的一些实践，对描述器做一个更详细的说明。</p>
+<p>如果一个对象同时定义了<code>__get__</code>和<code>__set__</code>方法，则称它为资料描述器(<em>data descriptor</em>)，而仅定义了<code>__get__</code>方法的描述器称为非资料描述器(<em>non-data descriptor</em>，常用于方法，其他用途也是可以的)。</p>
+<p>资料描述器和非资料描述器的区别在于：<strong>相对于实例的字典的优先级</strong>。如果实例字典中有和描述器重名的属性，如果描述器是资料描述器，优先使用资料描述器，如果是非资料描述器，优先使用字典中的属性。这就是为何实例a的方法和属性重名时，比如都叫做<code>foo</code>，Python会在访问<code>a.foo</code>时优先访问实例字典中的属性，因为实例的方法是个非资料描述器。<br><a id="more"></a><br>要想制作一个只读的资料描述器需要同时定义<code>__set__</code>和<code>__get__</code>方法，由于是只读，所以只需要在<code>__set__</code>方法中抛出一个<code>AttributeError</code>异常即可。</p>
+<p>在一般情况下，描述器在属性访问时被自动调用。举例来说，<code>obj.d</code>会在<code>obj</code>的字典里面查找<code>d</code>，如果<code>d</code>定义了<code>__get__</code>方法，那么<code>d.__get__(obj)</code>会依据下面的优先规则被调用。</p>
+<p>调用的细节取决于<code>obj</code>是一个类还是一个实例，对于对象来讲，方法<code>object.__getattribute__</code>将属性访问<code>a.x</code>变成了<code>type(a).__dict__[&#39;x&#39;].__get__(a, type(a))</code>，具体实现依据这样的优先顺序:<strong>资料描述器</strong>优先于<strong>实例变量</strong>，<strong>实例变量</strong>优先于<strong>非资料描述器</strong>，<code>__getattr__()</code>方法具有最低优先级；对于类来讲，方法<code>type.__getattribute__</code>将<code>A.x</code>变成<code>A.__dict__[&#39;x&#39;].__get__(None, A)</code>。如以下代码:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">V</span>:</span></div><div class="line">    v = <span class="number">0</span></div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, val=<span class="number">0</span>)</span>:</span></div><div class="line">        self.v = val</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__get__</span><span class="params">(self, inst, owner)</span>:</span></div><div class="line">        <span class="keyword">return</span> self.v</div><div class="line">        </div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__set__</span><span class="params">(self, inst, value)</span>:</span></div><div class="line">        self.v = value</div><div class="line">        </div><div class="line">        </div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span>:</span></div><div class="line">    k1 = V(<span class="number">1</span>)</div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">k</span><span class="params">(self)</span>:</span>  <span class="comment"># non-data descriptor</span></div><div class="line">        <span class="keyword">pass</span></div><div class="line"></div><div class="line">a = A()</div><div class="line">print(a.k)  <span class="comment"># &lt;bound method...&gt; *op1*</span></div><div class="line">a.k = <span class="number">6</span>  <span class="comment"># replace non-data descriptor with instance dict  *op2*</span></div><div class="line">print(a.k)  <span class="comment"># 6  *op3*</span></div><div class="line"></div><div class="line">print(a.k1)  <span class="comment"># 1</span></div><div class="line">a.__dict__[<span class="string">'k1'</span>] = V(<span class="number">2</span>)  <span class="comment"># *op4*</span></div><div class="line">print(a.k1)  <span class="comment"># 1</span></div></pre></td></tr></table></figure></p>
+<p>这段代码展示了资料描述器、实例变量、非资料描述器在属性访问中的不同优先级，分析如下:类<code>A</code>中定义了方法<code>k</code>(非资料描述器)，第一次操作对<code>a.k</code>的访问将转变为<code>type(a).__dict__[&#39;k&#39;].__get__(a, type(a))</code>，<code>type(a)</code>即类<code>A</code>，<code>A.__dict__</code>中存储了方法<code>A.k</code>，由于方法<code>A.k</code>为非资料描述器，因此调用其定义的<code>__get__()</code>方法。第二次操作<code>a.k = 6</code>本质上是在字典<code>a.__dict__</code>中添加了<code>k</code>这一变量(注意<code>a.__dict__</code>和<code>A._dict__</code>的区别)，即新增了实例变量。第三次操作对<code>a.k</code>的访问由于<strong>实例变量</strong>优先级高于<strong>非资料描述器</strong>，因此将获得之前的赋值6而不是方法。在第四次操作前后分别访问了<code>a.k1</code>属性，由于<code>k1</code>是资料描述器，因此即使在<code>a.__dict__</code>中新增了实例变量<code>k1</code>，对<code>a.k1</code>仍然是访问了资料描述器而不是实例变量，与前述的优先级保持一致。</p>
+<p><code>__getattr__</code>与<code>__getattribute__</code>区别:前者只会在待访问的属性缺失时触发，而后者则会在每次访问属性时触发。</p>
+<p><strong>特别注意:</strong>如果要在<code>__getattribute__</code>和<code>__setattr__</code>方法中访问实例属性，那么应该直接通过<code>super()</code>来做，以避免无限递归。如以下代码就会抛出异常:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">BrokenAttribute</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, data)</span>:</span></div><div class="line">        self._data = data</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getattribute__</span><span class="params">(self, name)</span>:</span></div><div class="line">        print(<span class="string">'Called __getattribute__(&#123;0&#125;)'</span>.format(name))</div><div class="line">        <span class="keyword">return</span> self._data[name]</div><div class="line"></div><div class="line"></div><div class="line">data = BrokenAttribute(&#123;<span class="string">'foo'</span>: <span class="number">3</span>&#125;)</div><div class="line">print(data.foo)</div><div class="line">&gt;&gt;&gt;</div><div class="line">RecursionError: maximum recursion depth exceeded <span class="keyword">while</span> calling a Python object</div></pre></td></tr></table></figure></p>
+<p><strong>属性Property</strong></p>
+<p>调用<code>property()</code>是建立资料描述器的一种简洁方式，从而可以在访问属性时触发相应的方法调用。<code>property</code>函数原型:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">property(fget=None, fset=None, fdel=None, doc=None) -&gt; property attribute</div></pre></td></tr></table></figure></p>
+<p>下面展示了一个典型应用，定义一个托管属性(managed attribute)x:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span><span class="params">(object)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">getx</span><span class="params">(self)</span>:</span> <span class="keyword">return</span> self.__x</div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">setx</span><span class="params">(self, value)</span>:</span> self.__x = value</div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">delx</span><span class="params">(self)</span>:</span> <span class="keyword">del</span> self.__x</div><div class="line">    x = property(getx, setx, delx, <span class="string">"I'm the 'x' property."</span>)</div></pre></td></tr></table></figure>
+<p>其等价Python实现为:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Property</span><span class="params">(object)</span>:</span></div><div class="line">    <span class="string">"Emulate PyProperty_Type() in Objects/descrobject.c"</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, fget=None, fset=None, fdel=None, doc=None)</span>:</span></div><div class="line">        self.fget = fget</div><div class="line">        self.fset = fset</div><div class="line">        self.fdel = fdel</div><div class="line">        self.__doc__ = doc</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__get__</span><span class="params">(self, obj, objtype=None)</span>:</span></div><div class="line">        <span class="keyword">if</span> obj <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">            <span class="keyword">return</span> self</div><div class="line">        <span class="keyword">if</span> self.fget <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">            <span class="keyword">raise</span> AttributeError, <span class="string">"unreadable attribute"</span></div><div class="line">        <span class="keyword">return</span> self.fget(obj)</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__set__</span><span class="params">(self, obj, value)</span>:</span></div><div class="line">        <span class="keyword">if</span> self.fset <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">            <span class="keyword">raise</span> AttributeError, <span class="string">"can't set attribute"</span></div><div class="line">        self.fset(obj, value)</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__delete__</span><span class="params">(self, obj)</span>:</span></div><div class="line">        <span class="keyword">if</span> self.fdel <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">            <span class="keyword">raise</span> AttributeError, <span class="string">"can't delete attribute"</span></div><div class="line">        self.fdel(obj)</div></pre></td></tr></table></figure>
+<p><strong>静态方法与类方法</strong></p>
+<p>非资料描述器为将函数绑定成方法这种常见模式提供了一个简单的实现机制。<br>简而言之，函数有个方法<code>__get__()</code>，当函数被当作属性访问时，它会把函数变成一个实例方法。非资料描述器把实例调用<code>obj.f(*args)</code>转换成<code>f(obj, *args)</code>(绑定方法)，把类调用<code>klass.f(*args)</code>转换成<code>f(klass, *args)</code>(非绑定方法)。<br>静态方法原样返回函数，调用 c.f 或者 C.f 分别等价于<code>object.__getattribute__(c, &quot;f&quot;)</code>或者<code>object.__getattribute__(C, &quot;f&quot;)</code>。也就是说，无论是从一个对象还是一个类中，这个函数都会同样地访问到。<br>利用非资料描述器，<code>staticmethod()</code>的等价实现看起来像这样:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">staticmethod</span><span class="params">(object)</span>:</span></div><div class="line"> <span class="string">"Emulate PyStaticMethod_Type() in Objects/funcobject.c"</span></div><div class="line"></div><div class="line"> <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, f)</span>:</span></div><div class="line">      self.f = f</div><div class="line"></div><div class="line"> <span class="function"><span class="keyword">def</span> <span class="title">__get__</span><span class="params">(self, obj, objtype=None)</span>:</span></div><div class="line">      <span class="keyword">return</span> self.f</div></pre></td></tr></table></figure>
+<p>同样的，<code>classmethod()</code>等价实现看起来像这样:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClassMethod</span><span class="params">(object)</span>:</span></div><div class="line">     <span class="string">"Emulate PyClassMethod_Type() in Objects/funcobject.c"</span></div><div class="line"></div><div class="line">     <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, f)</span>:</span></div><div class="line">          self.f = f</div><div class="line"></div><div class="line">     <span class="function"><span class="keyword">def</span> <span class="title">__get__</span><span class="params">(self, obj, klass=None)</span>:</span></div><div class="line">          <span class="keyword">if</span> klass <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">               klass = type(obj)</div><div class="line">          <span class="function"><span class="keyword">def</span> <span class="title">newfunc</span><span class="params">(*args)</span>:</span></div><div class="line">               <span class="keyword">return</span> self.f(klass, *args)</div><div class="line">          <span class="keyword">return</span> newfunc</div></pre></td></tr></table></figure>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在上一篇中讲到了描述器方法&lt;code&gt;__get__&lt;/code&gt;、&lt;code&gt;__set__&lt;/code&gt;和&lt;code&gt;__delete__&lt;/code&gt;，同时也提到，一个对象具有任意一个方法的就会成为描述器，从而在被当作对象属性的时候会重写默认的查找行为。在本片中，通过对&lt;a href=&quot;https://docs.python.org/2/howto/descriptor.html&quot;&gt;Descriptor HowTo Guide&lt;/a&gt;的节选翻译以及笔者的自身的一些实践，对描述器做一个更详细的说明。&lt;/p&gt;
+&lt;p&gt;如果一个对象同时定义了&lt;code&gt;__get__&lt;/code&gt;和&lt;code&gt;__set__&lt;/code&gt;方法，则称它为资料描述器(&lt;em&gt;data descriptor&lt;/em&gt;)，而仅定义了&lt;code&gt;__get__&lt;/code&gt;方法的描述器称为非资料描述器(&lt;em&gt;non-data descriptor&lt;/em&gt;，常用于方法，其他用途也是可以的)。&lt;/p&gt;
+&lt;p&gt;资料描述器和非资料描述器的区别在于：&lt;strong&gt;相对于实例的字典的优先级&lt;/strong&gt;。如果实例字典中有和描述器重名的属性，如果描述器是资料描述器，优先使用资料描述器，如果是非资料描述器，优先使用字典中的属性。这就是为何实例a的方法和属性重名时，比如都叫做&lt;code&gt;foo&lt;/code&gt;，Python会在访问&lt;code&gt;a.foo&lt;/code&gt;时优先访问实例字典中的属性，因为实例的方法是个非资料描述器。&lt;br&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Python" scheme="http://youchen.me/categories/Python/"/>
+    
+    
+      <category term="Python" scheme="http://youchen.me/tags/Python/"/>
+    
+      <category term="描述器" scheme="http://youchen.me/tags/%E6%8F%8F%E8%BF%B0%E5%99%A8/"/>
+    
+      <category term="属性" scheme="http://youchen.me/tags/%E5%B1%9E%E6%80%A7/"/>
+    
+  </entry>
   
   <entry>
     <title>Python属性与描述器</title>
@@ -58,9 +105,9 @@
     
       <category term="Python" scheme="http://youchen.me/tags/Python/"/>
     
-      <category term="属性" scheme="http://youchen.me/tags/%E5%B1%9E%E6%80%A7/"/>
-    
       <category term="描述器" scheme="http://youchen.me/tags/%E6%8F%8F%E8%BF%B0%E5%99%A8/"/>
+    
+      <category term="属性" scheme="http://youchen.me/tags/%E5%B1%9E%E6%80%A7/"/>
     
   </entry>
   
@@ -257,11 +304,11 @@
     <link href="http://youchen.me/2017/01/05/welcome/"/>
     <id>http://youchen.me/2017/01/05/welcome/</id>
     <published>2017-01-05T03:58:00.000Z</published>
-    <updated>2017-01-17T02:16:43.000Z</updated>
+    <updated>2017-02-04T08:31:58.000Z</updated>
     
     <content type="html"><![CDATA[<p>欢迎来到我的博客，这个博客使用了<a href="https://hexo.io" target="_blank" rel="external">Hexo</a>构建，托管在<a href="https://pages.github.com" target="_blank" rel="external">Github Pages</a>,主题使用了<a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank" rel="external">Apollo</a>。</p>
-<a id="more"></a>
 <p>因为整个博客是托管在Github上的静态页面，没有数据库的支持，因此使用了<a href="http://duoshuo.com" target="_blank" rel="external">多说</a>来为整个博客提供评论功能，同时我也通过JS给博客增加了搜索功能，通过点击右下角的搜索图标或者双击<code>Ctrl</code>键可以启动搜索，这样可以方便快速查找相关内容。</p>
+<a id="more"></a>
 <p>现在博客的功能还有限，在以后我会慢慢增加新的功能，同时也会不定期更新一些我学习过程中的心得，欢迎大家阅读！</p>
 <p>谢谢！</p>
 ]]></content>
@@ -269,6 +316,7 @@
     <summary type="html">
     
       &lt;p&gt;欢迎来到我的博客，这个博客使用了&lt;a href=&quot;https://hexo.io&quot;&gt;Hexo&lt;/a&gt;构建，托管在&lt;a href=&quot;https://pages.github.com&quot;&gt;Github Pages&lt;/a&gt;,主题使用了&lt;a href=&quot;https://github.com/pinggod/hexo-theme-apollo&quot;&gt;Apollo&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;因为整个博客是托管在Github上的静态页面，没有数据库的支持，因此使用了&lt;a href=&quot;http://duoshuo.com&quot;&gt;多说&lt;/a&gt;来为整个博客提供评论功能，同时我也通过JS给博客增加了搜索功能，通过点击右下角的搜索图标或者双击&lt;code&gt;Ctrl&lt;/code&gt;键可以启动搜索，这样可以方便快速查找相关内容。&lt;/p&gt;
     
     </summary>
     
