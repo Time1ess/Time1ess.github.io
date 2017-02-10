@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://youchen.me/"/>
-  <updated>2017-02-10T04:05:08.000Z</updated>
+  <updated>2017-02-10T04:08:10.000Z</updated>
   <id>http://youchen.me/</id>
   
   <author>
@@ -20,12 +20,12 @@
     <link href="http://youchen.me/2017/02/10/Python-What-does-yield-do/"/>
     <id>http://youchen.me/2017/02/10/Python-What-does-yield-do/</id>
     <published>2017-02-10T02:42:13.000Z</published>
-    <updated>2017-02-10T04:05:08.000Z</updated>
+    <updated>2017-02-10T04:08:10.000Z</updated>
     
     <content type="html"><![CDATA[<p>最近在<a href="http://stackoverflow.com" target="_blank" rel="external">StackOverflow</a>上看的问题回答比较多，今天这篇是关于介绍Python生成器的相关思想以及其中关键字<code>yield</code>用法的翻译内容。</p>
 <p>为了搞清楚<code>yield</code>是用来做什么的，你首先得知道Python中<strong><em>生成器</em></strong>的相关概念，而为了了解生成器的相关概念，你需要知道什么是<strong><em>迭代器</em></strong>。</p>
 <a id="more"></a>
-<div class="tip"><br>本篇中的Python各个函数版本除了特殊说明外都是2.x版本<br></div>
+<div class="tip"><br>本篇中的Python除了特殊说明外都是Python 2.x<br></div>
 
 <h4 id="迭代器"><a href="#迭代器" class="headerlink" title="迭代器"></a>迭代器</h4><p>当你创建一个了列表，你可以逐个遍历列表中的元素，而这个过程便叫做<strong><em>迭代</em></strong>:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>mylist = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">for</span> i <span class="keyword">in</span> mylist:</div><div class="line"><span class="meta">... </span>   print(i)</div><div class="line"><span class="number">1</span></div><div class="line"><span class="number">2</span></div><div class="line"><span class="number">3</span></div></pre></td></tr></table></figure>
