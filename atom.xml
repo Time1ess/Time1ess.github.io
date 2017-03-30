@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://youchen.me/"/>
-  <updated>2017-03-13T11:36:23.000Z</updated>
+  <updated>2017-03-30T07:45:06.000Z</updated>
   <id>http://youchen.me/</id>
   
   <author>
@@ -14,6 +14,75 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>使用一维索引数组访问高维数组元素</title>
+    <link href="http://youchen.me/2017/03/30/CPP-Access-n-d-array-with-1-d-index-array/"/>
+    <id>http://youchen.me/2017/03/30/CPP-Access-n-d-array-with-1-d-index-array/</id>
+    <published>2017-03-30T06:34:10.000Z</published>
+    <updated>2017-03-30T07:45:06.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>这是这两天看书偶然间突然间想到的一个问题，假设有一个高维数组，比如3维整型数组<code>int arr[10][10][10];</code>，用户每次输入对应维数个数(3)个参数，存入一个索引数组<code>int idx[3]</code>中，根据索引返回对应索引的元素值。在低维情况下，可以采取直接访问的方式，比如输入的索引值为<code>idx[0] = 1, idx[1] = 2, idx[2] = 3</code>，可以通过<code>arr[idx[0]][idx[1]][idx[2]]</code>访问，但是如果数组维度太高，这样的方式就不可行了，比如<code>arr[idx[0]][idx[1]]....[idx[n]]</code>。所以需要换种方式。</p>
+<a id="more"></a>
+<p><strong>指针</strong></p>
+<p>我们知道，C/C++中数组的存放是采用连续内存单元的形式:</p>
+<p><img src="/2017/03/30/CPP-Access-n-d-array-with-1-d-index-array/c_1d_array.png" alt="c_1d_array"></p>
+<p>对一个长度为6的一维整型数组(<code>int a[6]</code>)，运行时将会分配一段连续的内存，我们可以通过<code>a[4]</code>来访问元素，其实这可以看做隐式的指针访问，即<code>*(a+4)</code>，该操作将会访问到第5个元素也就是<code>4</code>。</p>
+<p>对<code>*(a+4)</code>的访问过程可以这么理解:</p>
+<ol>
+<li>得到数组a的基地址</li>
+<li>在基地址的基础上加上偏移量<code>4</code></li>
+<li>获取该地址对应的整型值</li>
+</ol>
+<p>下面来看二维的情况。</p>
+<p><img src="/2017/03/30/CPP-Access-n-d-array-with-1-d-index-array/c_2d_array.png" alt="c_2d_array"></p>
+<p>对一个维度为3*3的二维整型数组(<code>int b[3][3]</code>)，运行时仍然会分配一段连续的内存，直接访问的方式和上面讲的一样，比如<code>b[1][2]</code>，同样，这可以看做<code>*(*(b+1)+2)</code>，该操作会访问到第二行第三列的元素也就是<code>5</code>，其中，<code>b+1</code>的操作对应于取第几行元素，<code>+2</code>的操作就对应于一维的偏移了，具体细节不再展开讨论。</p>
+<p>因此对于一个高维数组，比如四维数组<code>int c[5][5][5][5]</code>，<code>c[0][1][2][3]</code>代表的意思即是取<code>c</code>数组中第一维维度为<code>0</code>、第二维维度为<code>1</code>、第三维维度为<code>2</code>、第四维维度为<code>3</code>的对应元素，有了这样的理解，再看<code>*(*(*(*(c+0)+1)+2)+3)</code>就清晰多了。</p>
+<p><strong>问题</strong></p>
+<p>那么对于一个高维数组(100维、1000维等等)，就没有办法用代码直接写<code>*(*(*(....*(d+k1)+k2)+...+kn)</code>了，所以需要换个思路。</p>
+<p>既然内存单元存储的是实际值或者是地址，那么经过多次寻址，我们可以找到需要的实际值，那么怎么完成这个操作呢？</p>
+<p>我们仍然使用四维数组为例，假设有:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> arr[<span class="number">10</span>][<span class="number">10</span>][<span class="number">10</span>][<span class="number">10</span>] = &#123;<span class="number">0</span>&#125;;</div><div class="line">arr[<span class="number">1</span>][<span class="number">2</span>][<span class="number">3</span>][<span class="number">4</span>] = <span class="number">1</span>;</div></pre></td></tr></table></figure>
+<p>同时，索引数组为:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> idx[<span class="number">4</span>] = &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>&#125;;</div></pre></td></tr></table></figure>
+<p>我们想要的结果是得到<code>1</code>，可以直接通过<code>arr[idx[0]][idx[1]][idx[2]][idx[3]]</code>访问，但之前也说过了，这样的代码无法适用于高维情况。</p>
+<p><strong><code>void *</code>(不那么好)</strong></p>
+<p>最开始我想到的方式是使用<code>void *</code>指针，因为C中任意指针都可以赋值给<code>void *</code>指针，那么我们访问元素的思路可以这么理解:</p>
+<ol>
+<li>将数组<code>arr</code>的基地址赋值给<code>void *</code>指针</li>
+<li>根据每一维索引的偏移量以及<code>int</code>类型的大小计算<code>void *</code>指针的值</li>
+<li>将<code>void *</code>指针强制类型转换为<code>int *</code>指针并进行元素访问<code>*p</code></li>
+</ol>
+<p>需要注意的是第二步中，索引的偏移量代表的是<code>int</code>尺度的偏移，即对于<code>int a[2]</code>, <code>&amp;a[0]</code>和<code>&amp;a[1]</code>之间的偏移量，因此需要乘以<code>int</code>类型的大小。根据上面的描述，测试代码如下:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;bits/stdc++.h&gt;</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> N 10</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> arr[N][N][N][N] = &#123;<span class="number">0</span>&#125;;</div><div class="line">    <span class="keyword">int</span> idx[<span class="number">4</span>] = &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>&#125;;</div><div class="line">    arr[<span class="number">1</span>][<span class="number">2</span>][<span class="number">3</span>][<span class="number">4</span>] = <span class="number">1</span>;</div><div class="line">    <span class="built_in">cout</span>&lt;&lt;<span class="string">"Expected: "</span>&lt;&lt;arr[<span class="number">1</span>][<span class="number">2</span>][<span class="number">3</span>][<span class="number">4</span>]&lt;&lt;<span class="string">" at "</span>&lt;&lt;&amp;arr[<span class="number">1</span>][<span class="number">2</span>][<span class="number">3</span>][<span class="number">4</span>]&lt;&lt;<span class="built_in">endl</span>;</div><div class="line"></div><div class="line">    <span class="keyword">void</span> *p = arr;</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">4</span>; i++)</div><div class="line">        p += idx[i] * <span class="keyword">int</span>(<span class="built_in">pow</span>(N, <span class="number">3</span>-i)) * <span class="keyword">sizeof</span>(<span class="keyword">int</span>);</div><div class="line">    <span class="built_in">cout</span>&lt;&lt;<span class="string">"Got with void *: "</span>;</div><div class="line">    <span class="built_in">cout</span>&lt;&lt;*((<span class="keyword">int</span>*)p)&lt;&lt;<span class="string">" at "</span>&lt;&lt;p&lt;&lt;<span class="built_in">endl</span>;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>结果:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">test.cpp: In function &apos;int main()&apos;:</div><div class="line">test.cpp:21:53: warning: pointer of type &apos;void *&apos; used in arithmetic [-Wpointer-arith]</div><div class="line">         p += idx[i] * int(pow(10, 3-i)) * sizeof(int);</div><div class="line">                                                     ^</div><div class="line">Expected: 1 at 0x7fff5cb20f18</div><div class="line">Got with void *: 1 at 0x7fff5cb20f18</div></pre></td></tr></table></figure>
+<p>程序正确地得到了我们想要的结果，但是编译器给出了警告，因为<code>void *</code>指针是未知类型指针，因此编译器并不知道相关计算，另外还有在计算偏移尺度的时候，使用了<code>pow</code>函数而且使用了强制类型转换将其转为<code>int</code>，这可能导致舍入误差。</p>
+<p><strong><code>int *</code>改进</strong></p>
+<p>对于前述的方法，我们可以使用<code>int *</code>指针以及自己计算偏移尺度进行改进，通过将<code>arr</code>进行强制类型转换，赋值给整型指针<code>p</code>，在前面我们谈到数组的内存分配是连续的，因此我们只需要正确的计算出偏移量即可通过<code>p</code>指针得到所需要的值，此时因为使用的是整型指针<code>p</code>，因此不再需要乘以<code>sizeof(int)</code>，可以理解为<code>p+1</code>指向了下一个整型单元。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;bits/stdc++.h&gt;</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> N 10</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> arr[N][N][N][N] = &#123;<span class="number">0</span>&#125;;</div><div class="line">    <span class="keyword">int</span> idx[<span class="number">4</span>] = &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>&#125;;</div><div class="line">    arr[<span class="number">1</span>][<span class="number">2</span>][<span class="number">3</span>][<span class="number">4</span>] = <span class="number">1</span>;</div><div class="line">    <span class="built_in">cout</span>&lt;&lt;<span class="string">"Expected: "</span>&lt;&lt;arr[<span class="number">1</span>][<span class="number">2</span>][<span class="number">3</span>][<span class="number">4</span>]&lt;&lt;<span class="string">" at "</span>&lt;&lt;&amp;arr[<span class="number">1</span>][<span class="number">2</span>][<span class="number">3</span>][<span class="number">4</span>]&lt;&lt;<span class="built_in">endl</span>;</div><div class="line"></div><div class="line">    <span class="keyword">int</span> *p = (<span class="keyword">int</span> *)arr;</div><div class="line">    <span class="keyword">int</span> offset = <span class="number">1e3</span>;</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">4</span>; i++)</div><div class="line">    &#123;</div><div class="line">        p += idx[i] * offset;</div><div class="line">        offset /= <span class="number">10</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="built_in">cout</span>&lt;&lt;<span class="string">"Got with int *: "</span>;</div><div class="line">    <span class="built_in">cout</span>&lt;&lt;*p&lt;&lt;<span class="string">" at "</span>&lt;&lt;p&lt;&lt;<span class="built_in">endl</span>;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>结果:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Expected: 1 at 0x7fff51d37f08</div><div class="line">Got with int *: 1 at 0x7fff51d37f08</div></pre></td></tr></table></figure>
+<p><strong>后话</strong></p>
+<p>以上方法需要对指针以及指针的运算有一定的了解，当然，更多情况下，我们完全可以将高维数组展开成低维甚至一维数组，这样的访问将会很方便。或许处理这种问题还有其他更好的方式，有兴趣的读者可以自行研究。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;这是这两天看书偶然间突然间想到的一个问题，假设有一个高维数组，比如3维整型数组&lt;code&gt;int arr[10][10][10];&lt;/code&gt;，用户每次输入对应维数个数(3)个参数，存入一个索引数组&lt;code&gt;int idx[3]&lt;/code&gt;中，根据索引返回对应索引的元素值。在低维情况下，可以采取直接访问的方式，比如输入的索引值为&lt;code&gt;idx[0] = 1, idx[1] = 2, idx[2] = 3&lt;/code&gt;，可以通过&lt;code&gt;arr[idx[0]][idx[1]][idx[2]]&lt;/code&gt;访问，但是如果数组维度太高，这样的方式就不可行了，比如&lt;code&gt;arr[idx[0]][idx[1]]....[idx[n]]&lt;/code&gt;。所以需要换种方式。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="CPP" scheme="http://youchen.me/categories/CPP/"/>
+    
+    
+      <category term="CPP" scheme="http://youchen.me/tags/CPP/"/>
+    
+      <category term="指针" scheme="http://youchen.me/tags/%E6%8C%87%E9%92%88/"/>
+    
+      <category term="数组" scheme="http://youchen.me/tags/%E6%95%B0%E7%BB%84/"/>
+    
+  </entry>
   
   <entry>
     <title>基于Scrapy的京东商品评论爬虫</title>
