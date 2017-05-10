@@ -34,7 +34,7 @@
 </ol>
 <p>那么asyncio的异步模型实现是基于什么呢？</p>
 <p><img src="/2017/05/10/New-to-asyncio/reactor-1.png" alt=""></p>
-<p>如图所示，这是反应器模式的一个基本结构，它总是处在等待事件以及处理时间的状态之一，因此也被称作<strong>事件循环(event loop)</strong>，也即asyncio模块的核心之一。</p>
+<p>如图所示，这是反应器模式的一个基本结构，它总是处在等待事件以及处理事件的状态之一，因此也被称作<strong>事件循环(event loop)</strong>，也即asyncio模块的核心之一。</p>
 <h1 id="事件循环示例"><a href="#事件循环示例" class="headerlink" title="事件循环示例"></a>事件循环示例</h1><p>让我们从一些官方文档示例开始。</p>
 <p>第一个例子是简单地打印字符串：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> asyncio</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span><span class="params">(loop)</span>:</span></div><div class="line">    print(<span class="string">'Hello World'</span>)</div><div class="line">    loop.stop()</div><div class="line"></div><div class="line">loop = asyncio.get_event_loop()</div><div class="line"></div><div class="line"><span class="comment"># Schedule a call to hello_world()</span></div><div class="line">loop.call_soon(hello_world, loop)</div><div class="line"></div><div class="line"><span class="comment"># Blocking call interrupted by loop.stop()</span></div><div class="line">loop.run_forever()</div><div class="line">loop.close()</div></pre></td></tr></table></figure>
