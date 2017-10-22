@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://youchen.me/2017/10/22/kNN/</loc>
+    
+    <lastmod>2017-10-22T14:16:17.538Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://youchen.me/2017/07/25/%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0-%E5%85%A8%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C-FCN/</loc>
     
     <lastmod>2017-07-25T08:06:45.000Z</lastmod>
