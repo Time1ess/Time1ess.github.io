@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://youchen.me/"/>
-  <updated>2017-10-22T14:16:17.538Z</updated>
+  <updated>2017-10-23T00:46:17.043Z</updated>
   <id>http://youchen.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://youchen.me/2017/10/22/kNN/"/>
     <id>http://youchen.me/2017/10/22/kNN/</id>
     <published>2017-10-22T14:07:40.000Z</published>
-    <updated>2017-10-22T14:16:17.538Z</updated>
+    <updated>2017-10-23T00:46:17.043Z</updated>
     
     <content type="html"><![CDATA[<p>今天在学院论坛里面写了关于KNN的一篇解释，顺手就转到自己博客了，毕竟这都又是3个月没更新了，感觉自己学了很多但是就是太懒，不想记下来，这个习惯还是得改改。</p>
 <a id="more"></a>
@@ -38,7 +38,10 @@
 <p>以上是需要注意的几点，具体的Python的语法由于篇幅关系，不再赘述。</p>
 <h2 id="KNN"><a href="#KNN" class="headerlink" title="KNN"></a>KNN</h2><p>KNN，即K近邻，是一个监督学习算法，算法本身并不复杂，其基本流程是:</p>
 <ol>
-<li>假设给定包含$ M $个样本的训练集$ X<em>{train} $，每个样本包含$ N $个特征，以及对应的类别标签$ Y</em>{train} $，则$ X<em>{train} $可以用一个$ M \times N $的二维矩阵表示, $ Y</em>{train} $可以用一个$ M \times 1 $的二维矩阵表示<br>$$<br>X_{train} = \begin{bmatrix}<br>X_1^0 &amp; X_1^1 &amp;  … &amp;  X_1^n \\<br>X_2^0 &amp; X_2^1 &amp;  … &amp;  X_2^n \\<br>… &amp; … &amp; … &amp; … \\<br>X_M^0 &amp; X_M^1 &amp;  … &amp;  X<em>M^n \\<br>\end{bmatrix}<br>Y</em>{train} = \begin{bmatrix}<br>Y_0 \\ Y_1 \\ … \\ Y_M<br>\end{bmatrix}<br>$$</li>
+<li>假设给定包含$ M $个样本的训练集$ X_{train} $，每个样本包含$ N $个特征，以及对应的类别标签$ Y_{train} $，则$ X_{train} $可以用一个$ M \times N $的二维矩阵表示, $ Y_{train} $可以用一个$ M \times 1 $的二维矩阵表示</li>
+</ol>
+<p>$$<br>X_{train} = \begin{bmatrix}<br>X_1^0 &amp; X_1^1 &amp;  … &amp;  X_1^n \\<br>X_2^0 &amp; X_2^1 &amp;  … &amp;  X_2^n \\<br>… &amp; … &amp; … &amp; … \\<br>X_M^0 &amp; X_M^1 &amp;  … &amp;  X_M^n \\<br>\end{bmatrix}<br>Y_{train} = \begin{bmatrix}<br>Y_0 \\ Y_1 \\ … \\ Y_M<br>\end{bmatrix}<br>$$</p>
+<ol>
 <li>对于一个需要计算的新样本$ X $，计算其类别：<ol>
 <li>计算该样本$ X $与训练集$ X_{train} $中每个样本$ X_i $的距离$ D_i $(不同距离函数计算的距离不同，因此效果也会不同)</li>
 <li>在所有距离中取距离最小的前$ K $个样本的类别标签，根据$ K $个标签中出现次数最多的标签来确定样本$ X $的标签</li>
@@ -901,9 +904,9 @@
     
       <category term="Python" scheme="http://youchen.me/tags/Python/"/>
     
-      <category term="描述器" scheme="http://youchen.me/tags/%E6%8F%8F%E8%BF%B0%E5%99%A8/"/>
-    
       <category term="属性" scheme="http://youchen.me/tags/%E5%B1%9E%E6%80%A7/"/>
+    
+      <category term="描述器" scheme="http://youchen.me/tags/%E6%8F%8F%E8%BF%B0%E5%99%A8/"/>
     
   </entry>
   
@@ -949,9 +952,9 @@
     
       <category term="Python" scheme="http://youchen.me/tags/Python/"/>
     
-      <category term="描述器" scheme="http://youchen.me/tags/%E6%8F%8F%E8%BF%B0%E5%99%A8/"/>
-    
       <category term="属性" scheme="http://youchen.me/tags/%E5%B1%9E%E6%80%A7/"/>
+    
+      <category term="描述器" scheme="http://youchen.me/tags/%E6%8F%8F%E8%BF%B0%E5%99%A8/"/>
     
   </entry>
   
