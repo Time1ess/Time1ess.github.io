@@ -1,2 +1,3 @@
 _site/
 .deploy_git/
+db.json
