@@ -1,7 +1,7 @@
 ---
 title: Python正则表达式中的反斜线
 date: 2017-04-24 10:13:12
-tags: [Python, re]
+tags: [Python,正则,re模块]
 categories: Python
 ---
 

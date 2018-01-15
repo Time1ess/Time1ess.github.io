@@ -1,7 +1,7 @@
 ---
 title: 初窥asyncio
 date: 2017-05-10 14:10:06
-tags: [Python,asyncio,协程]
+tags: [Python,协程,asyncio]
 categories: Python
 ---
 前两天花了些时间阅读了Python的[`asyncio`](https://docs.python.org/3/library/asyncio.html#module-asyncio)模块的相关文档，综合之前对[Twisted](http://twistedmatrix.com/trac/)的一些了解，分享一些学习结果。

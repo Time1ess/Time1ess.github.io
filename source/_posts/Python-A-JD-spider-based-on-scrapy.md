@@ -1,7 +1,7 @@
 ---
 title: 基于Scrapy的京东商品评论爬虫
 date: 2017-03-12 22:07:57
-tags: [Python, Scrapy, Spider]
+tags: [Python,爬虫,Scrapy]
 categories: Python
 ---
 今天想跟大家分享的是关于网络爬虫的相关知识，网络爬虫是一种根据一定的规则，自动地对互联网上相关内容进行抓取的程序或者脚本，本文的内容主要是通过分析京东评论的加载过程，获取相关API，然后通过使用基于Python语言的开源网络爬虫框架——Scrapy，大量获取相关评论内容。

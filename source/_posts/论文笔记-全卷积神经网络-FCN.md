@@ -1,8 +1,8 @@
 ---
 title: 论文笔记-全卷积神经网络(FCN)
 date: 2017-07-25 10:50:05
-tags: [Semantic Segmentation, Deep Learning, CNN]
-categories: 语义分割
+tags: [机器学习,深度学习,语义分割]
+categories: 机器学习
 ---
 
 看了下时间已经快3个月没有写过东西了，客观原因是考试复习和项目上的事情比较多，主观原因是懒。

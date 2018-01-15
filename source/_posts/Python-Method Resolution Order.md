@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Python中的MRO
-tags: [Python,MRO,C3]
+tags: [Python,类,继承]
 category: Python
 date: 2017-01-22 15:23
 from: https://www.python.org/download/releases/2.3/mro

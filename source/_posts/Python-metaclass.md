@@ -1,7 +1,7 @@
 ---
 title: Python中的metaclass(元类)
 date: 2017-02-06 16:11:02
-tags: [Python,类,OOP]
+tags: [Python,类,面向对象编程]
 categories: Python
 from: http://stackoverflow.com/questions/100003/what-is-a-metaclass-in-python?answertab=votes#tab-top
 ---

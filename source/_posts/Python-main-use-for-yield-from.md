@@ -1,7 +1,7 @@
 ---
 title: Python中yield from的用法
 date: 2017-02-10 13:22:58
-tags: [Python,生成器，迭代器]
+tags: [Python,生成器,迭代器]
 categories: Python
 from: http://stackoverflow.com/a/26109157/331785
 ---
