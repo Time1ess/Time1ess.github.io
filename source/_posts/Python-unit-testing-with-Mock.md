@@ -136,20 +136,20 @@ hello mock
 
 * `assert_called`: 用来检验`Mock`对象至少有一次被调用
 	```Python
-	>>> mock = Mock()
-	>>> mock.method()
-	<Mock name='mock.method()' id='...'>
-	>>> mock.method.assert_called()
+>>> mock = Mock()
+>>> mock.method()
+<Mock name='mock.method()' id='...'>
+>>> mock.method.assert_called()
 	```
 * `assert_called_once`: 用来检验`Mock`对象恰好有一次被调用
 * `call_count`: 用来表示`Mock`被调用次数
    ```Python
-   >>> mock = Mock(return_value=None)
-	>>> mock.call_count
-	0
-	>>> mock()
-	>>> mock()
-	>>> mock.call_count
-	2
-   ```
+>>> mock = Mock(return_value=None)
+>>> mock.call_count
+0
+>>> mock()
+>>> mock()
+>>> mock.call_count
+2
+	```
 * ...
