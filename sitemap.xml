@@ -2,6 +2,69 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://youchen.me/2018/01/15/Python-unit-testing-with-Mock/</loc>
+    
+    <lastmod>2018-01-15T07:19:29.513Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://youchen.me/2017/04/24/Backslashes-in-Python-Regular-Expressions/</loc>
+    
+    <lastmod>2018-01-15T01:18:33.385Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://youchen.me/2017/05/10/New-to-asyncio/</loc>
+    
+    <lastmod>2018-01-15T01:18:15.816Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://youchen.me/2017/03/12/Python-A-JD-spider-based-on-scrapy/</loc>
+    
+    <lastmod>2018-01-15T01:18:04.489Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://youchen.me/2017/01/22/Python-Method%20Resolution%20Order/</loc>
+    
+    <lastmod>2018-01-15T01:17:45.671Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://youchen.me/2017/02/10/Python-main-use-for-yield-from/</loc>
+    
+    <lastmod>2018-01-15T01:17:23.609Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://youchen.me/2017/02/06/Python-metaclass/</loc>
+    
+    <lastmod>2018-01-15T01:17:12.817Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://youchen.me/2017/10/22/kNN/</loc>
+    
+    <lastmod>2018-01-15T01:16:38.647Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://youchen.me/2017/07/25/%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0-%E5%85%A8%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C-FCN/</loc>
+    
+    <lastmod>2018-01-15T01:09:30.882Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://youchen.me/2018/01/12/Django%E4%B8%AD%E7%9A%84select-related%E4%B8%8Eprefetch-related/</loc>
     
     <lastmod>2018-01-13T01:56:07.312Z</lastmod>
@@ -23,27 +86,6 @@
   </url>
   
   <url>
-    <loc>http://youchen.me/2017/07/25/%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0-%E5%85%A8%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C-FCN/</loc>
-    
-    <lastmod>2018-01-13T00:50:39.869Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://youchen.me/2017/01/05/welcome/</loc>
-    
-    <lastmod>2018-01-13T00:50:39.868Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://youchen.me/2017/10/22/kNN/</loc>
-    
-    <lastmod>2018-01-13T00:50:39.868Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://youchen.me/2017/01/24/Python-property%20and%20descriptor/</loc>
     
     <lastmod>2018-01-13T00:50:39.868Z</lastmod>
@@ -58,9 +100,9 @@
   </url>
   
   <url>
-    <loc>http://youchen.me/2017/02/06/Python-metaclass/</loc>
+    <loc>http://youchen.me/2017/01/05/welcome/</loc>
     
-    <lastmod>2018-01-13T00:50:39.867Z</lastmod>
+    <lastmod>2018-01-13T00:50:39.868Z</lastmod>
     
   </url>
   
@@ -72,37 +114,9 @@
   </url>
   
   <url>
-    <loc>http://youchen.me/2017/02/10/Python-main-use-for-yield-from/</loc>
-    
-    <lastmod>2018-01-13T00:50:39.866Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://youchen.me/2017/02/10/Python-What-does-yield-do/</loc>
     
     <lastmod>2018-01-13T00:50:39.866Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://youchen.me/2017/01/22/Python-Method%20Resolution%20Order/</loc>
-    
-    <lastmod>2018-01-13T00:50:39.865Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://youchen.me/2017/03/12/Python-A-JD-spider-based-on-scrapy/</loc>
-    
-    <lastmod>2018-01-13T00:50:39.848Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://youchen.me/2017/05/10/New-to-asyncio/</loc>
-    
-    <lastmod>2018-01-13T00:50:39.847Z</lastmod>
     
   </url>
   
@@ -115,13 +129,6 @@
   
   <url>
     <loc>http://youchen.me//404.html</loc>
-    
-    <lastmod>2018-01-13T00:50:39.839Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://youchen.me/2017/04/24/Backslashes-in-Python-Regular-Expressions/</loc>
     
     <lastmod>2018-01-13T00:50:39.839Z</lastmod>
     
