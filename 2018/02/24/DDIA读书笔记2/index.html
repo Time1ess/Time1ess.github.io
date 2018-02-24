@@ -1,0 +1,60 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> DDIA读书笔记2-可靠性、可扩展性和可维护性(二) · David's Blog</title><meta name="description" content="DDIA读书笔记2-可靠性、可扩展性和可维护性(二) - David"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/imgs/favicon.ico"><link rel="stylesheet" href="/css/bootstrap.css"><link rel="stylesheet" href="/css/bootstrap-theme.css"><link rel="stylesheet" href="/css/apollo.css"><link rel="stylesheet" href="/css/david.css"><link rel="search" type="application/opensearchdescription+xml" href="http://youchen.me/atom.xml" title="David's Blog"><script type="text/x-mathjax-config">MathJax.Hub.Config({ tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script><script async type="text/javascript" src="//cdnjs.cloudflare.com/ajax//libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/js/jquery-3.1.1.min.js"></script><script src="/js/bootstrap.min.js"></script><script src="/js/typeahead.js"></script><script src="/js/search.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-89945048-1",'auto');ga('send','pageview');</script><script>(function(){var bp = document.createElement('script');var curProtocol = window.location.protocol.split(':')[0];if (curProtocol === 'https') {bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';}else {bp.src = 'http://push.zhanzhang.baidu.com/push.js';}var s = document.getElementsByTagName("script")[0];s.parentNode.insertBefore(bp, s);})();</script></head><body><div id="search"><div id="search-panel" class="search-panel"><div class="search-input"><input id="search-keywords" type="text" placeholder="搜索范围: 文章标题 日期 标签" class="form-control"><ul role="list" class="typeahead dropdown-menu"></ul></div><div class="search-close"><a id="search-close" href="#"><img src="/imgs/close-white.png"></a></div></div><div class="search-button"><a id="search-open" title="双击Ctrl快速打开搜索框"><img src="/imgs/search-black.png"></a></div></div><div class="apollo-wrap"><header class="apollo"><a href="/" class="logo-link"><img src="/imgs/favicon.png" alt="logo"></a><ul class="apollo-nav apollo-nav-list"><li class="apollo-nav-list-item"><a href="/" target="_self" class="apollo-nav-list-link">博客</a></li><li class="apollo-nav-list-item"><a href="/archives" target="_self" class="apollo-nav-list-link">归档</a></li><li class="apollo-nav-list-item"><a href="/categories" target="_self" class="apollo-nav-list-link">分类</a></li><li class="apollo-nav-list-item"><a href="https://github.com/Time1ess" target="_blank" class="apollo-nav-list-link">GITHUB</a></li><li class="apollo-nav-list-item"><a href="/atom.xml" target="_self" class="apollo-nav-list-link">RSS</a></li><li class="apollo-nav-list-item"><a href="/about" target="_self" class="apollo-nav-list-link">关于</a></li></ul></header><main class="apollo-container"><div class="post"><article class="post-block"><h1 class="post-title">DDIA读书笔记2-可靠性、可扩展性和可维护性(二)</h1><div class="post-info">时间: 2018年2月24日 15:27 标签: <a class="tags" href="/tags/系统架构/">#系统架构</a>,<a class="tags" href="/tags/读书笔记/">#读书笔记</a>,<a class="tags" href="/tags/技术选型/">#技术选型</a></div><div class="post-content"><p>前文讲述了数据系统与可靠性，本篇中将对可扩展性以及可维护性进行总结。</p>
+<a id="more"></a>
+<h1 id="可扩展性"><a href="#可扩展性" class="headerlink" title="可扩展性"></a>可扩展性</h1><p>即使一个系统在当下可靠的运行，并不代表在未来也会可靠运行。一个常见的原因是负载的增加：或许系统从支持10k的并发用户增加到了支持100k的并发用户，或者从1m增加到了10m。或许系统处理了比之前更多的数据量。</p>
+<p>可扩展性是一个我们用来描述系统应对负载增长能力的术语。但需要注意的是，这并不是我们直接赋予系统的一个一维的标签:说“X可扩展”或者是“Y不可扩展”毫无意义。而应该是，“如果一个系统在某种程度上增长了，我们有哪些选项来应对这种增长？”和“我们如何增加更多的计算资源来应对额外的负载？”</p>
+<h2 id="描述负载"><a href="#描述负载" class="headerlink" title="描述负载"></a>描述负载</h2><p>首先我们需要简要的描述当前系统的负载，之后才能讨论增长的问题。负载可以通过几个我们称之为负载参数的数字来进行描述。对于参数的最好选择依赖于系统架构：可能是网络服务器的每秒请求数，数据库的读写比，聊天室的并发活跃用户数，缓存命中率等等。或许平均情况下是你最在意哪个或者你的瓶颈来自于小部分极端案例。</p>
+<p>为了更具体的描述，我们考虑Twitter，Twitter的两个主要操作是:</p>
+<ul>
+<li>发布推文：每个用户能够发送新的信息给所有关注他的人(平均4.6k请求每秒，峰值12k请求每秒)</li>
+<li>主页时间线：用户可以浏览他关注的人的所有推文(300k请求每秒)</li>
+</ul>
+<p>单纯处理12k每秒的写是十分简单的。但是，Twitter的扩展挑战并不主要来自于推文的容量，而是扇出(<strong>fan-out</strong>)——每个用户关注了许多用户，每个用户被许多用户关注。有两种方式来实现以上操作：</p>
+<ol>
+<li>发布一条推文只是简单的向推文集合里面插入一条新的推文。当一个用户请求的主页时间线时，查找所有其关注的用户，以及这些用户发布的推文，然后聚合这些推文(以时间排序)。在一个关系型数据库中，你可以写出以下语句：<br> <img src="/2018/02/24/DDIA读书笔记2/twitter_sql.png" alt=""></li>
+<li>为每个用户的主页时间线维护一个缓存——就像为每个用户提供一个推文的收件邮箱。当一个用户发布一个推文，查找所有关注该用户的用户，将该新推文插入到他们的主页时间线中。对主页时间线的请求将变得轻量，因为它的结果已经提前被计算好的。</li>
+</ol>
+<p>Twitter最开始使用的是方法1，但是系统无法跟上主页时间线请求负载的增加，因此它们转向了方法2.其表现更好的原因是发布推文的平均频率几乎小于请求主页时间线平均频率两个数量级，因此在本案例中在写入的时候做更多的工作优于在读的时候做更多的工作。</p>
+<p>然而，方法2存在的一个弊端是发布一个推文需要更多的额外工作。平均情况下，一条推文将会发送给大约75个关注这，因此4.6k每秒的推特发布速度变成了345k每秒的主页时间线缓存写入。但是这样的平均下隐藏了一个事实，那就是每个用户的关注者数量差别巨大，有些用户拥有超过30m的关注者。者代表着一条推文可能导致超过30m的主页时间线写入！而完成这项操作是十分耗时的——Twitter试图将推文的投递给所有关注者这一操作限制到5秒以内——这是一个巨大的挑战。</p>
+<p>最终Twitter采用的版本是两种方法的混合。大多数用户的推文保持在发布是写入到关注者的主页时间线中，少部分拥有大量关注者的用户不采用扇出的方式。用户在访问主页时间线时其关注的名人的推文将单独获取并合并到用户的主页时间线中，就像方法1一样。</p>
+<h2 id="描述性能"><a href="#描述性能" class="headerlink" title="描述性能"></a>描述性能</h2><p>当你可以描述系统的负载之后，你就可以开始调查当负载增加时会发生些什么。可以从这两方面进行：</p>
+<ul>
+<li>当你增加一个负载参数的值并保持系统资源（CPU，内存，网络带宽等等）不变，系统的性能如何？</li>
+<li>当你增加一个负载参数的值，需要增加多少系统资源来保持系统性能不变？</li>
+</ul>
+<p>这两个问题都需要性能数字来回答，因此让我们来简单的描述系统的性能。</p>
+<p>在Hadoop之类的批处理系统中，我们通常关心<em>吞吐量(throughput)</em>——一秒钟能处理的数据数量，或是处理一个固定大小数据集所需要的总时间。在线上系统中，通常更重要的是服务的<em>响应时间(response time)</em>，即客户端从发出请求到接收到响应的时间。</p>
+<p>在实际使用中，一个系统处理大量的请求，其响应时间可能大不相同。因此我们不能将响应时间定义为一个简单的数字，而是一个能测量到的数值的分布。如下图所示，每一个灰柱代表了向服务器的一次请求，高度表明了其响应时间。</p>
+<p><img src="/2018/02/24/DDIA读书笔记2/requests.png" alt=""></p>
+<p>许多请求都相当快速，但是时不时地会出现一些耗时很长的特殊请求。或许这些慢请求本质上是因为计算太多，比如它们处理了更多的数据。但是即使在某种场景下你认为所有的请求应该具有相同的响应时间，这仍然无法办到：由于上下文被切换到后台进程带来的随机延迟，由于网络丢包以及TCP重传，垃圾回收带来的暂停，缺页导致从磁盘读取，来自于服务器支架的机械振动，以及其他种种原因。</p>
+<p>因此我们经常一个服务的<em>平均</em>响应时间。但是，如果你想知道具有代表性的响应时间的话，均值并不是一个很好的度量指标，因为它没有告诉你有多少用户实际上是这么长的延迟。</p>
+<p>因此更好的选择是<em>百分数(percentiles)</em>，如果你将所有的响应时间从最快到最慢进行排序，那么<em>中位数</em>刚好是一个分界点：假设你的响应时间的中位数是200ms，这代表了所有请求中的一半都快于200ms，剩下的一半都慢于200ms。</p>
+<p>这使得中位数是一个好的评价指标，中位数通常也被称为<em>50th percentile</em>，或简写为<em>p50</em>。需要注意的是，中位数代表了一个请求，如果用户进行了多次请求，其中至少一个请求的慢于中位数的概率远远大于50%。</p>
+<p>为了找出这些特别耗时的特殊请求究竟有多耗时，我们通常还可以取<em>95th</em>，<em>99</em>和<em>99.9</em>（<em>p95</em>，<em>p99</em>，<em>p99</em>)。这些响应时间表达了95%，99%或99.9%的请求小于当前响应时间。</p>
+<h2 id="处理负载的方法"><a href="#处理负载的方法" class="headerlink" title="处理负载的方法"></a>处理负载的方法</h2><p>现在我们已经有了描述负载的参数以及度量性能的方法，我们可以开始讨论可扩展性这一问题了：当负载参数增加一定值的时候我们要如何仍然保证良好的性能？</p>
+<p>一个适合某个数量级负载的架构设计可能并不能处理负载增加为10倍的情况。如果你正在负责一个快速增长的服务，那么自然而然地你需要在不同尺度下的负载增加的时候重新思考你的架构设计，或更频繁。</p>
+<p>人们通常会讨论<em>垂直扩容（scaling up）</em>（迁移到一个更强大的计算机）和<em>水平扩容（scaling out）</em>（将负载分布到多台小型机器上面）这两个对立的概念。将负载分布到多台机器上面也被称为<em>无共享（shared-nothing）</em>架构。一个能运行于单机的系统通常是简单的，但是一个高性能计算机通常是很昂贵的，因此几乎不可避免的会需要水平扩容。在现实情况下，一个优秀的架构通常会需要更实用的多种方法的混合体：使用多台性能还不错的机器仍然比大量小型虚拟机更加简单以及便宜。</p>
+<p>有些系统是<em>有弹性的（elastic）</em>，这代表着它们可以在检测到负载增加的时候自动增加更多的计算资源，与此相对其他系统需要手动扩容（由开发者来分析容量并决定向系统增加更多机器）。一个弹性系统对于负载高度不可预测这种情况是十分游泳的，但是手动扩容系统更加简单而且更不容易出错。</p>
+<p>虽然在许多台机器间分发无状态服务是十分简单的，但是将有状态的数据系统从单一节点扩展为分布式设置将带来大量额外的复杂工作。因此，直到最近仍在使用的常见方法是将数据库存储于单一节点（垂直扩容）直到扩容花销或高可用需求迫使你将其进行分布式。</p>
+<h1 id="可维护性"><a href="#可维护性" class="headerlink" title="可维护性"></a>可维护性</h1><p>众所周知一个软件的主要开销并不在于其初始的开发过程中，而是其后期维护——修复bug，保持系统运行，调查错误，适应新平台，根据需求进行修改，支付专利费，添加新功能。</p>
+<p>我们应该以一种能够尝试最大程度减轻后期维护负担的方式来进行开发，为了完成这一目标，我们需要特别注意以下三个设计原则：</p>
+<ul>
+<li><em>可操作性（Operability）</em>：使得运维团队让保证系统流畅运行变得简单。</li>
+<li><em>简易性（Simplicity）</em>：使新工程师熟悉该系统变得简单，可以通过尽可能消除复杂性的方法（这和UI的简易性不同）</li>
+<li><em>可进化性（Evolvability）</em>：使得工程师未来由于需求变化以需要适应未预料到的用户使用情况而改变系统变得简单。也被称为可扩展性，可修改性，可塑性。</li>
+</ul>
+<h2 id="可操作性"><a href="#可操作性" class="headerlink" title="可操作性"></a>可操作性</h2><p>好的可操作性代表了使得运维团队的工作变得简单，让他们可以关注其更有价值的活动。数据系统可以通过以下方法来提高可操作性：</p>
+<ul>
+<li>对系统的运行时以及内部环境提供可视化工具以及好的监控工具</li>
+<li>为自动化以及标准工具继承提供好的支持</li>
+<li>避免单机依赖（允许机器被换下维护同时系统可以正常运行不受影响）</li>
+<li>提供好的文档说明以及简单易懂的操作流程（如果我做了X，将会发生Y）</li>
+<li>提供好的默认行为，但也应给予管理员在需要的时候重写这些行为的自由</li>
+<li>在合适的时候自我修复，但也应允许管理员在需要的时候手动控制系统状态</li>
+<li>列出可预测的行为，最小化意外情况</li>
+</ul>
+<h2 id="简易性"><a href="#简易性" class="headerlink" title="简易性"></a>简易性</h2><p>使一个系统更加简单并不意味着减少其功能，而是代表减少偶发复杂性。<strong>Moseley</strong>和<strong>Marks</strong>以不是用户能够看到的问题引发但是是来自于代码实现中的偶发情况来定义复杂性。</p>
+<p>减少偶发复杂性的最有效工具之一就是<em>抽象</em>。一个好的抽象能够将大量的实现细节隐藏于一个干净的，简单易懂的门后面。一个好的抽象也能在大量不同的应用之间使用。不仅是因为这种方法重用了大量实现而不需要重复实现，而且这带来了高质量软件，随着抽象组件质量的提高使得所有使用该组件的应用都能受益。</p>
+<p>然而，找到一个好的抽象是很困难的。在分布式系统中，虽然有许多优秀的算法，但是他们远不够简洁，无法让我们知道如何将这些东西打包并抽象，来帮助我们让系统的复杂度在一个可控的水平上。</p>
+<h2 id="可进化性"><a href="#可进化性" class="headerlink" title="可进化性"></a>可进化性</h2><p>一个系统的需求永远不变这几乎不可能。它们更像一个永远不停的过程：你了解了新的事实，之前没预料到的使用情况出现了，业务重点变化，用户要求新的功能，新平台代替旧平台，法律或监管需求改变，系统增加迫使架构改变等等。</p>
+<p>在组织流程方面，<em>敏捷(Agile)开发</em>为适应改变提供了一个框架。该社区还开发了一系列工具以及有用的模式来帮助在快速变化的环境里开发软件，比如<em>测试驱动开发（TDD）</em>和<em>重构</em>。</p>
+</div></article></div><script src="/js/comments.js"></script></main><footer class="apollo"><div class="paginator"><a href="/2018/02/23/DDIA读书笔记1/" class="next">下一篇</a></div><div class="copyright"><p>© 2016 - 2018 <a href="http://youchen.me">David</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div></body></html>
