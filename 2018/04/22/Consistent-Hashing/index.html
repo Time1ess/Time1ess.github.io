@@ -1,0 +1,111 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 浅谈分布式缓存与一致性哈希算法 · David's Blog</title><meta name="description" content="浅谈分布式缓存与一致性哈希算法 - David"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/imgs/favicon.ico"><link rel="stylesheet" href="/css/bootstrap.css"><link rel="stylesheet" href="/css/bootstrap-theme.css"><link rel="stylesheet" href="/css/apollo.css"><link rel="stylesheet" href="/css/david.css"><link rel="search" type="application/opensearchdescription+xml" href="http://youchen.me/atom.xml" title="David's Blog"><script type="text/x-mathjax-config">MathJax.Hub.Config({ tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script><script async type="text/javascript" src="//cdnjs.cloudflare.com/ajax//libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/js/jquery-3.1.1.min.js"></script><script src="/js/bootstrap.min.js"></script><script src="/js/typeahead.js"></script><script src="/js/search.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-89945048-1",'auto');ga('send','pageview');</script><script>(function(){var bp = document.createElement('script');var curProtocol = window.location.protocol.split(':')[0];if (curProtocol === 'https') {bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';}else {bp.src = 'http://push.zhanzhang.baidu.com/push.js';}var s = document.getElementsByTagName("script")[0];s.parentNode.insertBefore(bp, s);})();</script></head><body><div id="search"><div id="search-panel" class="search-panel"><div class="search-input"><input id="search-keywords" type="text" placeholder="搜索范围: 文章标题 日期 标签" class="form-control"><ul role="list" class="typeahead dropdown-menu"></ul></div><div class="search-close"><a id="search-close" href="#"><img src="/imgs/close-white.png"></a></div></div><div class="search-button"><a id="search-open" title="双击Ctrl快速打开搜索框"><img src="/imgs/search-black.png"></a></div></div><div class="apollo-wrap"><header class="apollo"><a href="/" class="logo-link"><img src="/imgs/favicon.png" alt="logo"></a><ul class="apollo-nav apollo-nav-list"><li class="apollo-nav-list-item"><a href="/" target="_self" class="apollo-nav-list-link">博客</a></li><li class="apollo-nav-list-item"><a href="/archives" target="_self" class="apollo-nav-list-link">归档</a></li><li class="apollo-nav-list-item"><a href="/categories" target="_self" class="apollo-nav-list-link">分类</a></li><li class="apollo-nav-list-item"><a href="https://github.com/Time1ess" target="_blank" class="apollo-nav-list-link">GITHUB</a></li><li class="apollo-nav-list-item"><a href="/atom.xml" target="_self" class="apollo-nav-list-link">RSS</a></li><li class="apollo-nav-list-item"><a href="/about" target="_self" class="apollo-nav-list-link">关于</a></li></ul></header><main class="apollo-container"><div class="post"><article class="post-block"><h1 class="post-title">浅谈分布式缓存与一致性哈希算法</h1><div class="post-info">时间: 2018年4月22日 09:26 标签: <a class="tags" href="/tags/哈希算法/">#哈希算法</a>,<a class="tags" href="/tags/分布式/">#分布式</a>,<a class="tags" href="/tags/缓存/">#缓存</a></div><div class="post-content"><p>之前听到过一致性哈希算法，但是没有去进行了解。恰逢最近在看系统设计方面的内容，看到设计缓存系统的部分，对于如何合理有效地分配缓存而使用的一致性哈希算法进行了一些了解。</p>
+<a id="more"></a>
+<h1 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h1><p>缓存是目前各种应用中广泛使用的技术，比如DNS、Web服务器缓存等，是一种以空间换时间的方式。</p>
+<p>常见的缓存算法有很多，LRU（最久未使用)、LFU（最近最少使用）等等。下面简单介绍一下LRU算法。</p>
+<p>一个缓存算法应该支持这些操作：插入、删除、查找。对于LRU，为了实现快速查找，我们需要使用到哈希表，另外由于我们需要根据使用情况，快速调整一个对象的位置，那么我们很容易能想到使用链表来实现，同时由于需要从链表中删除一个对象后保证链表连接，因此我们需要使用到双向链表。</p>
+<p>LRU的工作流程如下：</p>
+<ul>
+<li>查找：给定一个键(key)，从LRU缓存中查询结果<ul>
+<li>若该键存在于哈希表中：从哈希表中获取该键对应的值以及在双向链表中的位置，从双向链表中删除该键并调整前后结点的连接，将该键重新插入到链表头部，返回值。</li>
+<li>若该键不存在于哈希表中：直接返回告知调用者该键不存在。</li>
+</ul>
+</li>
+<li>插入：给定一个键值对(key-val)，加入LRU缓存<ul>
+<li>若该键存在于哈希表中：从哈希表中获取键在双向链表中的位置，从双向链表中删除该键并调整前后结点的连接，将该键重新插入到链表头部，更新哈希表中键对应的值。</li>
+<li>若该键不存在于哈希表中：（若LRU已满，获得链表最后一个结点的键，删除该结点以及其对应的哈希表的内容）将该键插入到链表头部，在哈希表中保存键对应的值以及链表位置。</li>
+</ul>
+</li>
+<li>删除：给定一个键，从LRU缓存中删除<ul>
+<li>若该键存在于哈希表中：从哈希表中获取键在双向链表中的位置，从双向链表中删除该键并调整前后结点的连接，从哈希表中删除该键。</li>
+<li>若该键不存在于哈希表中：直接返回。</li>
+</ul>
+</li>
+</ul>
+<h1 id="缓存并发性"><a href="#缓存并发性" class="headerlink" title="缓存并发性"></a>缓存并发性</h1><p>当多个客户端同时尝试更新缓存时，可能会发生读写冲突。例如两个客户端可能竞争相同的缓存槽，而最后一个更新缓存的客户端将获胜。要解决读写冲突，常见的方法就是使用锁，但是使用锁将带来严重的性能影响，那么如何优化呢？</p>
+<p>一种方法是缓存分成多个分片，为每个分片分配一个锁，这样客户端在理想情况下会更新不同分片的缓存，就不用再相互等待。但是在极端情况下，仍然无法避免竞争的问题。</p>
+<p>另一种方法是使用提交日志。所有的改动被存储到一个日志中，而不是立即对缓存进行更新。一些后台进程将异步执行日志来更新缓存。这一策略在数据库设计中经常使用。</p>
+<h1 id="分布式缓存"><a href="#分布式缓存" class="headerlink" title="分布式缓存"></a>分布式缓存</h1><p>当我们的系统达到一定的规模时，我们需要将缓存分配给多台机器。假设我们有M台服务器以及N张图片需要缓存，我们希望通过3台服务器来缓存这N张图片，平衡服务器负载压力。</p>
+<h2 id="随机分配"><a href="#随机分配" class="headerlink" title="随机分配"></a>随机分配</h2><p>考虑最简单的情况，我们直接将这N张图片随机分给M台服务器，每台分得N/M张图片，在这种情况下，如果我们想访问某个缓存项，我们需要遍历M台服务器去找到该缓存项，然而缓存的目的是为了提高速度，改善用户体验，减轻后端服务器压力，如果每次访问都需要遍历所有服务器，那么该缓存是很失败的。</p>
+<h2 id="哈希表"><a href="#哈希表" class="headerlink" title="哈希表"></a>哈希表</h2><p>我们还可以在一台服务器上保存一张哈希表，这张哈希表能帮助我们找到某个缓存项在哪一台服务器上。这样做的好处是现在我们只需要访问2台服务器就能得到所需要的缓存项，但是缺点是使用了大量的空间来维护哈希表。</p>
+<h2 id="取模运算"><a href="#取模运算" class="headerlink" title="取模运算"></a>取模运算</h2><p>常见的一种操作是对缓存项的键进行哈希计算，然后将hash之后的结果对服务器的数量进行取模运算，根据该结果来确定缓存会在哪一台服务器上。</p>
+<p>$$ idx = hash(pic\_name) \pmod{N} $$</p>
+<p>举例说明，有10条数据，3个结点，如果按照取模的方式，那么缓存的分配情况将会是：</p>
+<ul>
+<li>Node A: 0, 3, 6, 9</li>
+<li>Node B: 1, 4, 7</li>
+<li>Node C: 2, 5, 8</li>
+</ul>
+<p>但是使用这种方法进行缓存时会有一些缺陷，如果3台缓存服务器不够用了我们应该怎么做呢？没错，增加额外的结点，我们考虑再增加一台服务器，此时分配情况将会变为：</p>
+<ul>
+<li>Node A: 0, 4, 8</li>
+<li>Node B: 1, 5, 9</li>
+<li>Node C: 2, 6</li>
+<li>Node D: 3, 7</li>
+</ul>
+<p>通过观察可以发现，数据3, 4, 5, 6, 7, 8, 9在增加结点之后，都被重新分配了位置，这一成本实在是太高，而在重新分配位置这一期间，缓存这段时间内是失效的，因此如果有客户端请求数据，应用将不得不向后端服务器请求。由于大量缓存同时失效，造成缓存雪崩，整个系统可能会被压垮，所以我们要避免这种情况的发生。</p>
+<h1 id="一致性哈希算法"><a href="#一致性哈希算法" class="headerlink" title="一致性哈希算法"></a>一致性哈希算法</h1><p>我们在前文谈到了采用普通哈希算法会出现的问题。</p>
+<ol>
+<li>当缓存服务器数量变化时，会引起缓存雪崩，可能导致系统崩溃。</li>
+<li>当缓存服务器数量变化时，几乎所有缓存位置都会发生改变。</li>
+</ol>
+<p>其实第一个问题主要来源于第二个问题，因此我们只要能保证在缓存服务器数量变化时，尽量维持缓存的位置即可。因此在<a href="https://zh.wikipedia.org/w/index.php?title=David_Karger&amp;action=edit&amp;redlink=1" target="_blank" rel="noopener">Karger</a>等人1997年的一篇论文中介绍了“一致哈希”如何应用于用户易变的分布式Web服务中。哈希表中的每一个代表分布式系统中一个节点，在系统添加或删除节点只需要移动N/M项。</p>
+<h2 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h2><p>一致性哈希算法也是取模的过程，不过不同于对服务器数量进行取模，一致性哈希是对$ 2^{32} $取模。</p>
+<p>我们可以想象一个环，这个环上面一共有$ 2^{32} $个点，顺时针从0开始计数: 0, 1, 2, …, $ 2^{32} - 1 $，我们将该环称作哈希环，如下图所示。</p>
+<p><img src="/2018/04/22/Consistent-Hashing/hash_ring.png" alt="hash_ring.png"></p>
+<p>对于我们已有的3台缓存服务器，我们通常对其IP地址进行哈希计算然后对$ 2^{32} $取模，得到一个$ 0 $到$ 2^{32} - 1 $之间的数，该数即服务器在环上位置，这样，我们能得到3台服务器在环上的位置，如下图所示。</p>
+<p>$$ idx = hash(server\_ip) \pmod{2^{32}} $$</p>
+<p><img src="/2018/04/22/Consistent-Hashing/servers_on_hash_ring.png" alt="servers_on_hash_ring.png"></p>
+<p>同样道理，我们将需要缓存的对象也映射到哈希环上，可以使用图片名称来进行哈希。</p>
+<p>$$ idx = hash(pic\_name) \pmod{2^{32}} $$</p>
+<p><img src="/2018/04/22/Consistent-Hashing/pic_on_hash_ring.png" alt="pic_on_hash_ring.png"></p>
+<p>现在服务器与缓存项都被映射到了哈希环上，我们最后需要决定缓存项被分配到哪一台服务器上，通常做法是沿着顺时针方向找到的第一台服务器就是缓存项应在的服务器，在本例中缓存项应被分配到服务器A上。</p>
+<p><img src="/2018/04/22/Consistent-Hashing/pic_belong.png" alt="pic_belong.png"></p>
+<h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><p>那么我们使用了一致性哈希算法后解决了缓存雪崩的问题了吗？</p>
+<p>考虑多个缓存项已经完成分配的情况下，服务器B出现了故障，如下图所示。</p>
+<p><img src="/2018/04/22/Consistent-Hashing/pics_on_hash_ring.png" alt="pics_on_hash_ring.png"></p>
+<p>当我们失去服务器B以后，只需要移动两个缓存项，而不是近乎所有缓存项。</p>
+<h2 id="哈希环偏斜"><a href="#哈希环偏斜" class="headerlink" title="哈希环偏斜"></a>哈希环偏斜</h2><p>在前面的论述中，我们理想地将3台服务器划分的很均匀，但是实际情况可能差得多，如下图所示。</p>
+<p><img src="/2018/04/22/Consistent-Hashing/bias_on_hash_ring.png" alt="bias_on_hash_ring.png"></p>
+<p>在这种情况下，几乎所有的缓存项将被分配到服务器C，而A和B将会分得很少，一致性哈希算法提出了“虚拟结点”这一概念来解决这一问题。</p>
+<h2 id="虚拟结点"><a href="#虚拟结点" class="headerlink" title="虚拟结点"></a>虚拟结点</h2><p>这一概念其实很简单，在增加一个结点到环上的时候，我们会为其分配多个位置（因为实际结点只有一个，因此多出来的结点就称为虚拟结点）。引入虚拟结点之后，缓存的分布就均衡多了，如下图所示。</p>
+<p><img src="/2018/04/22/Consistent-Hashing/virtual_nodes_on_hash_ring.png" alt="virtual_nodes_on_hash_ring.png"></p>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><p>通过编写相关代码，我模拟了拥有在5个服务器，每个服务器拥有150个结点的情况下，对100000个缓存项进行一致性哈希分配的过程，结果如下表所示。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">服务器IP</th>
+<th style="text-align:center">缓存项数量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">192.168.1.5</td>
+<td style="text-align:center">20216</td>
+</tr>
+<tr>
+<td style="text-align:center">192.168.1.39</td>
+<td style="text-align:center">21106</td>
+</tr>
+<tr>
+<td style="text-align:center">192.168.1.53</td>
+<td style="text-align:center">17599</td>
+</tr>
+<tr>
+<td style="text-align:center">192.168.1.66</td>
+<td style="text-align:center">19560</td>
+</tr>
+<tr>
+<td style="text-align:center">192.168.1.127</td>
+<td style="text-align:center">21519</td>
+</tr>
+</tbody>
+</table>
+<p>可以看出，使用一致性哈希算法之后，每个服务器能够被比较均匀的分配到缓存项，同时如果增加或删除服务器，需要迁移的缓存项数量也基本符合N/M这一数量。</p>
+<p>有兴趣的读者可以参考我的实现代码<a href="https://github.com/Time1ess/MyProjects/tree/master/ConsistentHashRing" target="_blank" rel="noopener">Github</a>。</p>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><ul>
+<li><a href="https://wizardforcel.gitbooks.io/gainlo-interview-guide/content/sd11.html" target="_blank" rel="noopener">https://wizardforcel.gitbooks.io/gainlo-interview-guide/content/sd11.html</a></li>
+<li><a href="https://blog.csdn.net/gerryke/article/details/53939212" target="_blank" rel="noopener">https://blog.csdn.net/gerryke/article/details/53939212</a></li>
+<li><a href="http://www.zsythink.net/archives/1182" target="_blank" rel="noopener">http://www.zsythink.net/archives/1182</a></li>
+<li><a href="https://zh.wikipedia.org/wiki/一致哈希" target="_blank" rel="noopener">https://zh.wikipedia.org/wiki/一致哈希</a></li>
+</ul>
+</div></article></div></main><footer class="apollo"><div class="paginator"><a href="/2018/02/24/DDIA读书笔记2/" class="next">下一篇</a></div><div class="copyright"><p>© 2016 - 2018 <a href="http://youchen.me">David</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div></body></html>

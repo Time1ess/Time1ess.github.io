@@ -2,16 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://youchen.me/2018/04/22/Consistent-Hashing/</loc>
+    
+    <lastmod>2018-04-22T03:04:08.119Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://youchen.me/2018/02/24/DDIA%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B02/</loc>
     
-    <lastmod>2018-02-24T07:27:37.116Z</lastmod>
+    <lastmod>2018-02-26T03:55:25.665Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://youchen.me/2018/02/23/DDIA%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B01/</loc>
     
-    <lastmod>2018-02-24T03:48:16.022Z</lastmod>
+    <lastmod>2018-02-26T03:54:56.730Z</lastmod>
     
   </url>
   
@@ -100,7 +107,7 @@
   </url>
   
   <url>
-    <loc>http://youchen.me/2017/01/05/welcome/</loc>
+    <loc>http://youchen.me/2017/01/24/Python-property%20and%20descriptor/</loc>
     
     <lastmod>2018-01-13T00:50:39.868Z</lastmod>
     
@@ -114,7 +121,7 @@
   </url>
   
   <url>
-    <loc>http://youchen.me/2017/01/24/Python-property%20and%20descriptor/</loc>
+    <loc>http://youchen.me/2017/01/05/welcome/</loc>
     
     <lastmod>2018-01-13T00:50:39.868Z</lastmod>
     
