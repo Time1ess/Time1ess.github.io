@@ -3,7 +3,7 @@ title: 海量数据判重之布隆过滤器
 tags:
   - 系统设计
   - 爬虫
-  - 哈希
+  - 哈希算法
 category: 系统设计
 date: 2018-05-07 10:57:07
 categories:
