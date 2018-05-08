@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://youchen.me/2018/05/08/The-Google-File-System/</loc>
+    
+    <lastmod>2018-05-08T03:25:52.822Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://youchen.me/2018/05/07/Bloom-Filter/</loc>
     
-    <lastmod>2018-05-07T02:58:53.473Z</lastmod>
+    <lastmod>2018-05-08T00:54:24.262Z</lastmod>
     
   </url>
   
