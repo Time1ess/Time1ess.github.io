@@ -4,9 +4,8 @@ tags:
   - 系统设计
   - 爬虫
   - 哈希算法
-category: 系统设计
+category: 系统架构
 date: 2018-05-07 10:57:07
-categories:
 ---
 
 
